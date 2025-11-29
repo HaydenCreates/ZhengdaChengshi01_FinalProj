@@ -1,0 +1,40 @@
+drink_name,Type,sweetness,sourness,alcohol_feeling,abv,flavor_tags,mouthfeel,ingredients,steps,time,glassware
+Mojito,Classic,中,中,輕,10,薄荷;柑橘,氣泡,"蘭姆酒,萊姆汁,薄荷葉,糖,蘇打水",1. 壓碎薄荷與糖\n2. 加萊姆汁與蘭姆酒\n3. 加冰塊加入蘇打水\n4. 攪拌,5,Highball
+Daiquiri,Classic,中,重,中,20,柑橘,清爽,"蘭姆酒,萊姆汁,糖",1. 混合所有材料\n2. 搖盪後濾出,4,Cocktail
+Margarita,Classic,中,重,中,25,柑橘,清爽,"龍舌蘭,柑橘酒,萊姆汁",1. 搖盪材料\n2. 鹽口杯盛裝,4,Margarita Glass
+Cosmopolitan,Classic,中,中,中,20,莓果;柑橘,清爽,"伏特加,蔓越莓汁,柑橘酒,萊姆汁",1. 搖盪\n2. 過濾入杯,4,Martini
+Martini,Classic,低,低,重,35,草本,濃郁,"琴酒,苦艾酒",1. 攪拌冰鎮\n2. 濾入馬丁尼杯,3,Martini Glass
+Old Fashioned,Classic,低,低,重,32,苦味,濃郁,"威士忌,糖,苦精",1. 壓糖與苦精\n2. 加威士忌攪拌,5,Rocks
+Negroni,Classic,低,低,重,25,苦味,濃郁,"琴酒,味美思,金巴利",1. 攪拌\n2. 加冰塊,3,Rocks
+Whiskey Sour,Classic,中,重,中,18,柑橘,清爽,"威士忌,檸檬汁,糖漿",1. 搖盪\n2. 加冰濾入杯,4,Rocks
+Long Island Iced Tea,Classic,中,中,重,22,柑橘,氣泡,"伏特加,琴酒,蘭姆酒,龍舌蘭,柑橘酒,可樂,檸檬汁",1. 混合多酒基底\n2. 加可樂,4,Highball
+Sex on the Beach,Classic,中,低,輕,12,水果;甜,清爽,"伏特加,桃子酒,柳橙汁,蔓越莓汁",1. 倒入所有材料\n2. 輕攪,3,Highball
+Tequila Sunrise,Classic,中,低,中,12,柑橘,清爽,"龍舌蘭,柳橙汁,紅石榴糖漿",1. 倒柳橙汁\n2. 加龍舌蘭\n3. 製造漸層,3,Highball
+Pina Colada,Classic,重,低,中,13,椰子;鳳梨,奶泡,"蘭姆酒,椰奶,鳳梨汁",1. 與冰塊一起調合\n2. 倒出,5,Hurricane
+Mai Tai,Classic,中,中,重,25,水果,濃郁,"蘭姆酒,萊姆汁,柑橘酒,杏仁糖漿",1. 搖盪\n2. 加碎冰,4,Rocks
+Gin Tonic,Classic,低,低,輕,10,草本;柑橘,氣泡,"琴酒,Tonic Water,檸檬",1. 加冰\n2. 倒入琴酒與通寧水,2,Highball
+Singapore Sling,Classic,中,中,中,18,水果;香草,清爽,"琴酒,櫻桃酒,蘋果酒,檸檬汁,蘇打水",1. 搖盪酒類\n2. 加蘇打水,5,Highball
+Bloody Mary,Classic,低,低,中,10,番茄;辛香,濃郁,"伏特加,番茄汁,檸檬汁,辣醬,胡椒",1. 混合所有材料\n2. 加冰攪拌,5,Highball
+Blue Lagoon,Classic,中,低,中,15,柑橘,清爽,"伏特加,藍柑橘酒,檸檬汁,蘇打水",1. 搖盪\n2. 加蘇打水,4,Highball
+Manhattan,Classic,低,低,重,30,苦味;木質,濃郁,"威士忌,紅味美思,苦精",1. 攪拌後濾出,3,Cocktail
+Irish Coffee,Classic,中,低,中,15,咖啡;奶泡,奶泡,"威士忌,咖啡,鮮奶油",1. 倒入熱咖啡\n2. 加奶油,6,Irish Coffee Mug
+White Russian,Classic,重,低,中,18,奶香,濃郁,"伏特加,咖啡酒,奶油",1. 倒入酒類\n2. 加奶油,3,Rocks
+Black Russian,Classic,低,低,重,25,咖啡,濃郁,"伏特加,咖啡酒",1. 混合即可,2,Rocks
+Cuba Libre,Classic,中,低,輕,10,柑橘,氣泡,"蘭姆酒,可樂,檸檬",1. 倒可樂與蘭姆\n2. 挤檸檬汁,2,Highball
+Americano,Classic,中,低,輕,11,苦味;柑橘,氣泡,"金巴利,甜味美思,蘇打水",1. 加冰攪拌\n2. 加蘇打水,3,Highball
+Aperol Spritz,Classic,中,低,輕,8,柑橘;草本,氣泡,"Aperol,氣泡酒,蘇打水",1. 倒入材料\n2. 輕攪,3,Wine Glass
+Sidecar,Classic,低,中,重,28,柑橘,清爽,"白蘭地,柑橘酒,檸檬汁",1. 搖盪後濾出,3,Cocktail
+French 75,Classic,中,中,輕,12,柑橘,氣泡,"琴酒,檸檬汁,糖,氣泡酒",1. 搖盪酒類\n2. 加氣泡酒,4,Flute
+Caipirinha,Classic,中,重,中,20,柑橘,濃郁,"卡夏沙,萊姆,糖",1. 搗碎萊姆\n2. 加卡夏沙與冰,4,Old-fashioned
+Tom Collins,Classic,中,中,輕,10,柑橘,氣泡,"琴酒,檸檬汁,糖,蘇打水",1. 搖盪前3項\n2. 加蘇打水,4,Highball
+Paloma,Classic,中,中,輕,10,柑橘;葡萄柚,氣泡,"龍舌蘭,葡萄柚汁,蘇打水",1. 倒材料加冰,3,Highball
+Butterfly Pea Cooler,Special,中,中,輕,8,花香;柑橘,氣泡,"琴酒,蝶豆花萃取,檸檬汁,蘇打水",1. 搖盪酒類\n2. 加蘇打水,4,Highball
+Rose Martini,Special,低,低,重,28,花香,濃郁,"琴酒,玫瑰糖漿,苦艾酒",1. 攪拌冰鎮\n2. 濾入杯,4,Martini Glass
+Matcha Highball,Special,低,低,輕,8,草本;抹茶,氣泡,"威士忌,抹茶液,蘇打水",1. 威士忌與抹茶混合\n2. 加蘇打水,4,Highball
+Lychee Blossom,Special,中,低,輕,10,荔枝;花香,清爽,"伏特加,荔枝酒,檸檬汁",1. 搖盪\n2. 直接倒出,4,Cocktail
+Yuzu Spritz,Special,中,低,輕,8,柚子;柑橘,氣泡,"柚子酒,氣泡酒,蘇打水",1. 加冰並倒入所有材料,3,Wine Glass
+Coconut Cloud,Special,重,低,輕,7,椰子;奶香,奶泡,"椰奶酒,奶油,香草糖漿",1. 與冰混合\n2. 打成奶泡,5,Hurricane
+Berry Galaxy,Special,中,低,輕,12,莓果;香草,清爽,"伏特加,莓果泥,香草糖漿",1. 搖盪\n2. 裝入冰杯,4,Cocktail
+Smoky Apple,Special,低,低,中,15,蘋果;煙燻,濃郁,"威士忌,蘋果汁,煙燻木片",1. 調和材料\n2. 用煙燻罩煙燻,6,Rocks
+Honey Jasmine,Special,中,低,輕,9,蜂蜜;花香,清爽,"琴酒,茉莉茶,蜂蜜",1. 搖盪\n2. 加冰倒出,4,Cocktail
+Lemon Basil Cooler,Special,低,中,輕,7,羅勒;柑橘,氣泡,"伏特加,羅勒,檸檬汁,蘇打水",1. 壓碎羅勒\n2. 混合材料\n3. 加蘇打水,5,Highball
