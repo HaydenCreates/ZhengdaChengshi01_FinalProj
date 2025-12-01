@@ -24,6 +24,8 @@ ingredients = df_1["ingredients"].drop_duplicates().tolist()
 time = df_1["time"].drop_duplicates().tolist()
 glassware = df_1["glassware"].drop_duplicates().tolist()
 
+selected_options = {} #提出結果以後，需要刪除所有選項
+
 #functions
 def exit_app():
     window.destroy()
@@ -99,8 +101,22 @@ type_var = tk.StringVar()
 type_combobox = ttk.Combobox(leftFrame, textvariable=type_var, values=type)
 type_combobox.pack(anchor='w', pady=4)
 
+#積累用戶選擇的選項
+def accumulate_choices():
+    #檢查是否所有選項均已選擇
+    if not sweetness_var.get() or not sourness_var.get() or not alcohol_var.get() or not type_var.get() or all(var.get() == 0 for var in mouthfeel_vars.values()):
+        messagebox.showwarning("警告", "請確保所有選項均已選擇")
+        return
+    else:
+        selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
+        selected_options['sweetness'] = sweetness_var.get()
+        selected_options['sourness'] = sourness_var.get()
+        selected_options['alcohol_feeling'] = alcohol_var.get()
+        selected_options['type'] = type_var.get()
+        messagebox.showinfo("選擇已儲存", f"已儲存的選擇: {selected_options}")
+
 #確認按鈕
-button = tk.Button(bottomFrame, text="確認") #加入functionality
+button = tk.Button(bottomFrame, text="確認", command=accumulate_choices) 
 button.pack(pady=10)
 
 #離開按鈕
