@@ -103,17 +103,39 @@ type_combobox.pack(anchor='w', pady=4)
 
 #積累用戶選擇的選項
 def accumulate_choices():
-    #檢查是否所有選項均已選擇
-    if not sweetness_var.get() or not sourness_var.get() or not alcohol_var.get() or not type_var.get() or all(var.get() == 0 for var in mouthfeel_vars.values()):
+    # 檢查是否所有選項均已選擇
+    if not sweetness_var.get() or not sourness_var.get() or not alcohol_var.get() or not type_var.get() or not any(var.get() for var in mouthfeel_vars.values()):
         messagebox.showwarning("警告", "請確保所有選項均已選擇")
         return
-    else:
-        selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
-        selected_options['sweetness'] = sweetness_var.get()
-        selected_options['sourness'] = sourness_var.get()
-        selected_options['alcohol_feeling'] = alcohol_var.get()
-        selected_options['type'] = type_var.get()
-        messagebox.showinfo("選擇已儲存", f"已儲存的選擇: {selected_options}")
+
+    # 儲存使用者選擇
+    selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
+    selected_options['sweetness'] = sweetness_var.get()
+    selected_options['sourness'] = sourness_var.get()
+    selected_options['alcohol_feeling'] = alcohol_var.get()
+    selected_options['type'] = type_var.get()
+
+    # === 真正從 CSV 篩選推薦調酒 ===
+    filtered_df = df_1.copy()
+    print(filtered_df)
+
+    filtered_df = filtered_df[filtered_df["sweetness"] == selected_options["sweetness"]]
+    filtered_df = filtered_df[filtered_df["sourness"] == selected_options["sourness"]]
+    filtered_df = filtered_df[filtered_df["alcohol_feeling"] == selected_options["alcohol_feeling"]]
+    filtered_df = filtered_df[filtered_df['Type'] == selected_options['type']]
+
+    # mouthfeel 是多選 → 用 isin 篩選
+    filtered_df = filtered_df[filtered_df["mouthfeel"].isin(selected_options["mouthfeel"])]
+
+    # === 顯示推薦結果 ===
+    if filtered_df.empty:
+        messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
+        return
+    recommendation_text = ""
+    for idx, row in filtered_df.head(5).iterrows():
+        recommendation_text += f" {row['drink_name']}｜杯型：{row['glassware']}\n"
+
+    messagebox.showinfo("推薦結果", recommendation_text)
 
 #確認按鈕
 button = tk.Button(bottomFrame, text="確認", command=accumulate_choices) 
