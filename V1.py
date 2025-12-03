@@ -101,6 +101,96 @@ type_var = tk.StringVar()
 type_combobox = ttk.Combobox(leftFrame, textvariable=type_var, values=type)
 type_combobox.pack(anchor='w', pady=4)
 
+# Utility helpers
+def normalize_text(s):
+    if pd.isna(s):
+        return ""
+    return str(s).lower().strip()
+
+def jaccard_from_strings(a, b):
+    # a, b: comma-separated strings or lists; returns 0..1
+    if a is None:
+        a = ""
+    if b is None:
+        b = ""
+    if isinstance(a, str):
+        A = {x.strip() for x in a.lower().split(",") if x.strip()}
+    else:
+        A = {x.strip().lower() for x in a}
+    if isinstance(b, str):
+        B = {x.strip() for x in b.lower().split(",") if x.strip()}
+    else:
+        B = {x.strip().lower() for x in b}
+    if not A and not B:
+        return 0.0
+    inter = A & B
+    union = A | B
+    return len(inter) / len(union) if union else 0.0
+
+def score_row(row, selections, weights=None, numeric_max=None):
+    if weights is None:
+        weights = {
+            'type': 1.0,
+            'sweetness': 1.0,
+            'sourness': 1.0,
+            'alcohol_feeling': 1.0,
+            'mouthfeel': 1.5,
+        }
+    score = 0.0
+    max_score = 0.0
+
+    # Exact categorical matches
+    for col in ('Type', 'sweetness', 'sourness', 'alcohol_feeling', 'glassware'):
+        key = col.lower()  # mapping to selections keys usually lowercased
+        w = weights.get(key, 1.0)
+        max_score += w
+        sel_val = selections.get(key)
+        if sel_val:
+            if normalize_text(row.get(col, "")) == normalize_text(sel_val):
+                score += w
+
+    # Jaccard-style matching for multi-value fields
+    for col in (('mouthfeel', 'mouthfeel'), ('flavor_tags', 'flavor_tags'), ('ingredients', 'ingredients')):
+        col_name, sel_key = (col if isinstance(col, tuple) else (col, col))
+        w = weights.get(sel_key, 1.0)
+        max_score += w
+        sel_list = selections.get(sel_key)
+        sel_for_compare = sel_list if isinstance(sel_list, (list, tuple)) else (",".join(sel_list) if isinstance(sel_list, (list, tuple)) else sel_list)
+        sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
+        score += sim * w
+
+    # Example numeric handling (if you have a numeric 'time' column and selection is numeric)
+    if 'time' in row and selections.get('time') is not None:
+        try:
+            row_time = float(row['time'])
+            sel_time = float(selections['time'])
+            # numeric_max: maximum meaningful time to normalize by (set by you)
+            if numeric_max is None:
+                numeric_max = max(row_time, sel_time, 1.0)
+            diff = abs(row_time - sel_time) / numeric_max
+            numeric_sim = max(0.0, 1.0 - diff)  # 1.0 if exact, drops toward 0
+            w = weights.get('time', 1.0)
+            max_score += w
+            score += numeric_sim * w
+        except Exception:
+            pass
+
+    # Normalize to 0..1
+    normalized = (score / max_score) if max_score > 0 else 0.0
+    return normalized
+
+def find_best_matches(df, selections, top_n=3):
+    scored = []
+    for idx, row in df.iterrows():
+        s = score_row(row, selections)
+        scored.append((idx, s))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    results = []
+    for idx, s in scored[:top_n]:
+        row = df.loc[idx].to_dict()
+        results.append({'score': s, 'row': row})
+    return results
+
 #積累用戶選擇的選項
 def accumulate_choices():
     # 檢查是否所有選項均已選擇
@@ -109,12 +199,30 @@ def accumulate_choices():
         return
 
     # 儲存使用者選擇
-    selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
-    selected_options['sweetness'] = sweetness_var.get()
-    selected_options['sourness'] = sourness_var.get()
-    selected_options['alcohol_feeling'] = alcohol_var.get()
-    selected_options['type'] = type_var.get()
+    #selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
+    #selected_options['sweetness'] = sweetness_var.get()
+    #selected_options['sourness'] = sourness_var.get()
+    #selected_options['alcohol_feeling'] = alcohol_var.get()
+    #selected_options['type'] = type_var.get()
 
+    selections = {
+        'type': type_var.get(),
+        'sweetness': sweetness_var.get(),
+        'sourness': sourness_var.get(),
+        'alcohol_feeling': alcohol_var.get(),
+        'mouthfeel': [k for k, v in mouthfeel_vars.items() if v.get() == 1],
+    }
+    
+    matches = find_best_matches(df_1, selections, top_n=5)
+    if matches:
+        best = matches[0]
+        # 
+        score = best['score']
+        messagebox.showinfo("Best match", best)
+    else:
+         messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
+
+    '''
     # === 真正從 CSV 篩選推薦調酒 ===
     filtered_df = df_1.copy()
     print(filtered_df)
@@ -136,6 +244,7 @@ def accumulate_choices():
         recommendation_text += f" {row['drink_name']}｜杯型：{row['glassware']}\n"
 
     messagebox.showinfo("推薦結果", recommendation_text)
+    '''
 
 #確認按鈕
 button = tk.Button(bottomFrame, text="確認", command=accumulate_choices) 
