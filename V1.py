@@ -107,6 +107,7 @@ def normalize_text(s):
         return ""
     return str(s).lower().strip()
 
+# 從多值字符串計算相似度 i.e. "sweet, sour" vs "sour, bitter" - 多選項的列
 def jaccard_from_strings(a, b):
     # a, b: comma-separated strings or lists; returns 0..1
     if a is None:
@@ -127,6 +128,7 @@ def jaccard_from_strings(a, b):
     union = A | B
     return len(inter) / len(union) if union else 0.0
 
+#每個列的計算分數
 def score_row(row, selections, weights=None, numeric_max=None):
     if weights is None:
         weights = {
@@ -139,9 +141,9 @@ def score_row(row, selections, weights=None, numeric_max=None):
     score = 0.0
     max_score = 0.0
 
-    # Exact categorical matches
-    for col in ('Type', 'sweetness', 'sourness', 'alcohol_feeling', 'glassware'):
-        key = col.lower()  # mapping to selections keys usually lowercased
+    # 具體值匹配（pipei)
+    for col in ('Type', 'sweetness', 'sourness', 'alcohol_feeling', 'mouthfeel'):
+        key = col.lower()  # 每個列都轉成小寫以匹配 selections 的鍵
         w = weights.get(key, 1.0)
         max_score += w
         sel_val = selections.get(key)
@@ -149,24 +151,25 @@ def score_row(row, selections, weights=None, numeric_max=None):
             if normalize_text(row.get(col, "")) == normalize_text(sel_val):
                 score += w
 
-    # Jaccard-style matching for multi-value fields
+    # 如果一個列有多值匹配（jaccard)
     for col in (('mouthfeel', 'mouthfeel'), ('flavor_tags', 'flavor_tags'), ('ingredients', 'ingredients')):
         col_name, sel_key = (col if isinstance(col, tuple) else (col, col))
         w = weights.get(sel_key, 1.0)
         max_score += w
         sel_list = selections.get(sel_key)
+
+        #因為可能是list或string 所以要處理兩種情況
         sel_for_compare = sel_list if isinstance(sel_list, (list, tuple)) else (",".join(sel_list) if isinstance(sel_list, (list, tuple)) else sel_list)
         sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
         score += sim * w
 
-    # Example numeric handling (if you have a numeric 'time' column and selection is numeric)
+    #如果是數字列 (time)
     if 'time' in row and selections.get('time') is not None:
         try:
             row_time = float(row['time'])
             sel_time = float(selections['time'])
-            # numeric_max: maximum meaningful time to normalize by (set by you)
-            if numeric_max is None:
-                numeric_max = max(row_time, sel_time, 1.0)
+
+            numeric_max = max(row_time, sel_time, 1.0)
             diff = abs(row_time - sel_time) / numeric_max
             numeric_sim = max(0.0, 1.0 - diff)  # 1.0 if exact, drops toward 0
             w = weights.get('time', 1.0)
@@ -181,9 +184,12 @@ def score_row(row, selections, weights=None, numeric_max=None):
 
 def find_best_matches(df, selections, top_n=3):
     scored = []
+    #idx是index,row是每一列的資料
     for idx, row in df.iterrows():
         s = score_row(row, selections)
         scored.append((idx, s))
+
+    # 根據分數排序
     scored.sort(key=lambda x: x[1], reverse=True)
     results = []
     for idx, s in scored[:top_n]:
@@ -213,12 +219,11 @@ def accumulate_choices():
         'mouthfeel': [k for k, v in mouthfeel_vars.items() if v.get() == 1],
     }
     
+    #call find best matches function
     matches = find_best_matches(df_1, selections, top_n=5)
     if matches:
         best = matches[0]
-        # 
-        score = best['score']
-        messagebox.showinfo("Best match", best)
+        open_secondary_window(best)
     else:
          messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
 
@@ -245,6 +250,58 @@ def accumulate_choices():
 
     messagebox.showinfo("推薦結果", recommendation_text)
     '''
+
+#結果的視窗
+def open_secondary_window(result_text):
+    # Create secondary (or popup) window.
+    secondary_window = tk.Toplevel()
+    secondary_window.title("Secondary Window")
+    secondary_window.config(width=600, height=600)
+    
+    #顯示結果
+    drink_name = tk.Label(secondary_window, text=result_text['row']['drink_name'], font=(None, 16))
+    drink_name.place(x=50, y=20)
+
+    ingredients = tk.Label(secondary_window, text="Ingredients: " + str(result_text['row']['ingredients']))
+    ingredients.place(x=50, y=60)
+
+    instructions = tk.Label(secondary_window, text="Instructions: " + str(result_text['row']['steps']))
+    instructions.place(x=50, y=100)
+
+    mouthfeel = tk.Label(secondary_window, text="Mouthfeel: " + str(result_text['row']['mouthfeel']))
+    mouthfeel.place(x=50, y=140)
+
+    flavor_tags = tk.Label(secondary_window, text="Flavor Tags: " + str(result_text['row']['flavor_tags']))
+    flavor_tags.place(x=50, y=180)
+
+    alcohol_feeling = tk.Label(secondary_window, text="Alcohol Feeling: " + str(result_text['row']['alcohol_feeling']))
+    alcohol_feeling.place(x=50, y=220)
+
+    time_label = tk.Label(secondary_window, text="Time: " + str(result_text['row']['time']))
+    time_label.place(x=50, y=260)
+
+    type_label = tk.Label(secondary_window, text="Type: " + str(result_text['row']['Type']))
+    type_label.place(x=50, y=300)
+
+    glassware_label = tk.Label(secondary_window, text="Glassware: " + str(result_text['row']['glassware']))
+    glassware_label.place(x=50, y=340)
+
+    abv_label = tk.Label(secondary_window, text="ABV: " + str(result_text['row']['abv']))
+    abv_label.place(x=50, y=380)
+
+    sourness_label = tk.Label(secondary_window, text="Sourness: " + str(result_text['row']['sourness']))
+    sourness_label.place(x=50, y=420)
+
+    sweetness_label = tk.Label(secondary_window, text="Sweetness: " + str(result_text['row']['sweetness']))
+    sweetness_label.place(x=50, y=460)
+
+    #離開按鈕
+    button_close = ttk.Button(
+        secondary_window,
+        text="Close window",
+        command=secondary_window.destroy
+    )
+    button_close.place(x=50, y=500)
 
 #確認按鈕
 button = tk.Button(bottomFrame, text="確認", command=accumulate_choices) 
