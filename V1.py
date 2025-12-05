@@ -16,8 +16,11 @@ df_1 = pd.read_csv(file_path)
 #options
 type = df_1["Type"].drop_duplicates().tolist()
 sweetness = df_1["sweetness"].drop_duplicates().tolist()
+sweetness.sort()
 sourness = df_1["sourness"].drop_duplicates().tolist()
+sourness.sort()
 alcohol_feeling = df_1["alcohol_feeling"].drop_duplicates().tolist()
+alcohol_feeling.sort()
 flavors = df_1["flavor_tags"].drop_duplicates().tolist() #not sure yet if this is the best method
 mouthfeel = df_1["mouthfeel"].drop_duplicates().tolist()
 ingredients = df_1["ingredients"].drop_duplicates().tolist()
