@@ -299,16 +299,19 @@ def open_secondary_window(result_text):
     type_label.place(x=50, y=240)
 
     glassware_label = tk.Label(secondary_window, text="Glassware: " + str(result_text['row']['glassware']))
-    glassware_label.place(x=50, y=340)
+    glassware_label.place(x=50, y=280)
 
     abv_label = tk.Label(secondary_window, text="ABV: " + str(result_text['row']['abv']))
-    abv_label.place(x=50, y=380)
+    abv_label.place(x=50, y=320)
 
     sourness_label = tk.Label(secondary_window, text="Sourness: " + str(result_text['row']['sourness']))
-    sourness_label.place(x=50, y=420)
-
+    sourness_label.place(x=50, y= 360)
+    
     sweetness_label = tk.Label(secondary_window, text="Sweetness: " + str(result_text['row']['sweetness']))
-    sweetness_label.place(x=50, y=460)
+    sweetness_label.place(x=50, y=400)
+
+    notice_label = tk.Label(secondary_window, text="通知: 您尋找的飲料是最相似性的, 不一定會直接配偶您點按的選項", fg="red")
+    notice_label.place(x=200, y=500)
 
     #離開按鈕
     button_close = ttk.Button(
