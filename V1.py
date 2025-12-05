@@ -276,27 +276,27 @@ def open_secondary_window(result_text):
     drink_name.place(x=50, y=20)
 
     ingredients = tk.Label(secondary_window, text="Ingredients: " + str(result_text['row']['ingredients']))
+    ingredients.place(x=50, y=50)
 
     final_steps = str(result_text['row']['steps']).split("\\n")
-    print(final_steps)
     for i in range(len(final_steps)):
         step_label = tk.Label(secondary_window, text=f"Step {i+1}: {final_steps[i]}")
-        step_label.place(x=50, y=100 + i*30)
+        step_label.place(x=325, y=50 + i*40)
 
     mouthfeel = tk.Label(secondary_window, text="Mouthfeel: " + str(result_text['row']['mouthfeel']))
-    mouthfeel.place(x=50, y=140)
+    mouthfeel.place(x=50, y=80)
 
     flavor_tags = tk.Label(secondary_window, text="Flavor Tags: " + str(result_text['row']['flavor_tags']))
-    flavor_tags.place(x=50, y=180)
+    flavor_tags.place(x=50, y=120)
 
     alcohol_feeling = tk.Label(secondary_window, text="Alcohol Feeling: " + str(result_text['row']['alcohol_feeling']))
-    alcohol_feeling.place(x=50, y=220)
+    alcohol_feeling.place(x=50, y= 160)
 
     time_label = tk.Label(secondary_window, text="Time: " + str(result_text['row']['time']))
-    time_label.place(x=50, y=260)
+    time_label.place(x=50, y=200)
 
     type_label = tk.Label(secondary_window, text="Type: " + str(result_text['row']['Type']))
-    type_label.place(x=50, y=300)
+    type_label.place(x=50, y=240)
 
     glassware_label = tk.Label(secondary_window, text="Glassware: " + str(result_text['row']['glassware']))
     glassware_label.place(x=50, y=340)
