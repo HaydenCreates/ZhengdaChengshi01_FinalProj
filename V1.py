@@ -161,6 +161,17 @@ def score_row(row, selections, weights=None, numeric_max=None):
         #因為可能是list或string 所以要處理兩種情況
         sel_for_compare = sel_list if isinstance(sel_list, (list, tuple)) else (",".join(sel_list) if isinstance(sel_list, (list, tuple)) else sel_list)
         sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
+                single_token = normalize_text(sel_list[0])
+                row_tokens = {x.strip() for x in normalize_text(row.get(col_name, "")).split(",") if x.strip()}
+                if single_token and single_token in row_tokens:
+                    sim = 1.0
+                else:
+                    sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
+            else:
+                sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
+        else:
+            sel_for_compare = sel_list or ""
+            sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
         score += sim * w
 
     #如果是數字列 (time)
@@ -265,8 +276,11 @@ def open_secondary_window(result_text):
     ingredients = tk.Label(secondary_window, text="Ingredients: " + str(result_text['row']['ingredients']))
     ingredients.place(x=50, y=60)
 
-    instructions = tk.Label(secondary_window, text="Instructions: " + str(result_text['row']['steps']))
-    instructions.place(x=50, y=100)
+    final_steps = str(result_text['row']['steps']).split("\\n")
+    print(final_steps)
+    for i in range(len(final_steps)):
+        step_label = tk.Label(secondary_window, text=f"Step {i+1}: {final_steps[i]}")
+        step_label.place(x=50, y=100 + i*30)
 
     mouthfeel = tk.Label(secondary_window, text="Mouthfeel: " + str(result_text['row']['mouthfeel']))
     mouthfeel.place(x=50, y=140)
