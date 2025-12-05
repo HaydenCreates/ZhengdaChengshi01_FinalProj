@@ -103,7 +103,7 @@ type_combobox.pack(anchor='w', pady=4)
 
 # Utility helpers
 def normalize_text(s):
-    if pd.isna(s):
+    if pd.isna(s) or s is None:
         return ""
     return str(s).lower().strip()
 
@@ -141,8 +141,8 @@ def score_row(row, selections, weights=None, numeric_max=None):
     score = 0.0
     max_score = 0.0
 
-    # 具體值匹配（pipei)
-    for col in ('Type', 'sweetness', 'sourness', 'alcohol_feeling', 'mouthfeel'):
+    # 具體值匹配（單值欄位） — 不把多選欄位 (mouthfeel 等) 放在這裡
+    for col in ('Type', 'sweetness', 'sourness', 'alcohol_feeling'):
         key = col.lower()  # 每個列都轉成小寫以匹配 selections 的鍵
         w = weights.get(key, 1.0)
         max_score += w
@@ -158,9 +158,11 @@ def score_row(row, selections, weights=None, numeric_max=None):
         max_score += w
         sel_list = selections.get(sel_key)
 
-        #因為可能是list或string 所以要處理兩種情況
-        sel_for_compare = sel_list if isinstance(sel_list, (list, tuple)) else (",".join(sel_list) if isinstance(sel_list, (list, tuple)) else sel_list)
-        sim = jaccard_from_strings(row.get(col_name, ""), sel_for_compare)
+        # 將 selection 轉成可比較的字串：若為 list/tuple，將其 join 成逗號分隔字串；否則使用原始值或空字串
+        if isinstance(sel_list, (list, tuple)):
+            sel_for_compare = ",".join([str(x) for x in sel_list])
+            # 如果只有一個選項，且該選項出現在資料列的標籤集中，視為完整匹配 (sim = 1.0)
+            if len(sel_list) == 1:
                 single_token = normalize_text(sel_list[0])
                 row_tokens = {x.strip() for x in normalize_text(row.get(col_name, "")).split(",") if x.strip()}
                 if single_token and single_token in row_tokens:
@@ -274,7 +276,6 @@ def open_secondary_window(result_text):
     drink_name.place(x=50, y=20)
 
     ingredients = tk.Label(secondary_window, text="Ingredients: " + str(result_text['row']['ingredients']))
-    ingredients.place(x=50, y=60)
 
     final_steps = str(result_text['row']['steps']).split("\\n")
     print(final_steps)
