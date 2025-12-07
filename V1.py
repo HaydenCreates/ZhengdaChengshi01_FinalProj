@@ -35,10 +35,17 @@ def exit_app():
     messagebox.showinfo("退出", "已退出酒吧管理系统")
 
 # 框架設置：頂部標題、內容（左右兩欄）、底部按鈕
-topFrame = Frame(window)
+# 三個主畫面
+frame_filter = Frame(window)
+frame_list = Frame(window)
+frame_detail = Frame(window)
+
+frame_filter.pack(fill="both", expand=True)
+
+topFrame = Frame(frame_filter)
 topFrame.pack(side=TOP, fill='x')
 
-contentFrame = Frame(window)
+contentFrame = Frame(frame_filter)
 contentFrame.pack(fill='both', expand=True)
 
 leftFrame = Frame(contentFrame)
@@ -47,7 +54,7 @@ leftFrame.pack(side=LEFT, fill='both', expand=True, padx=10, pady=10)
 rightFrame = Frame(contentFrame)
 rightFrame.pack(side=LEFT, fill='both', expand=True, padx=10, pady=10)
 
-bottomFrame = Frame(window)
+bottomFrame = Frame(frame_filter)
 bottomFrame.pack(side=BOTTOM, fill='x')
 
 # 自動讓視窗最大化
@@ -213,19 +220,51 @@ def find_best_matches(df, selections, top_n=3):
         results.append({'score': s, 'row': row})
     return results
 
+# 畫面 2：結果清單
+def show_results_list(matches):
+    '''
+    if not matches:
+        messagebox.showinfo("推薦結果", "沒有推薦結果可顯示。")
+        return
+    '''
+        
+    frame_filter.pack_forget()
+    frame_detail.pack_forget()
+    frame_list.pack(fill="both", expand=True)
+
+    for w in frame_list.winfo_children():
+        w.destroy()
+
+    tk.Label(frame_list, text="符合條件的調酒", font=(None, 20)).pack(pady=15)
+    print(matches)
+    for drink in matches:
+        row = Frame(frame_list)
+        row.pack(pady=5)
+
+        tk.Label(row, text=drink["row"]["drink_name"], width=25).pack(side=LEFT)
+        tk.Button(
+            row,
+            text="選擇",
+            command=lambda d=drink: open_secondary_window(d)
+        ).pack(side=LEFT)
+            # --- 在清單頁底部加入返回上一頁 ---
+    tk.Button(
+    frame_list,
+    text="返回清單",
+    command=back_to_filter
+    ).pack(pady=20)
+
+# 導航控制
+def back_to_filter():
+    frame_list.pack_forget()
+    frame_filter.pack(fill="both", expand=True)
+
 #積累用戶選擇的選項
 def accumulate_choices():
     # 檢查是否所有選項均已選擇
     if not sweetness_var.get() or not sourness_var.get() or not alcohol_var.get() or not type_var.get() or not any(var.get() for var in mouthfeel_vars.values()):
         messagebox.showwarning("警告", "請確保所有選項均已選擇")
         return
-
-    # 儲存使用者選擇
-    #selected_options['mouthfeel'] = [option for option, var in mouthfeel_vars.items() if var.get() == 1]
-    #selected_options['sweetness'] = sweetness_var.get()
-    #selected_options['sourness'] = sourness_var.get()
-    #selected_options['alcohol_feeling'] = alcohol_var.get()
-    #selected_options['type'] = type_var.get()
 
     selections = {
         'type': type_var.get(),
@@ -234,38 +273,13 @@ def accumulate_choices():
         'alcohol_feeling': alcohol_var.get(),
         'mouthfeel': [k for k, v in mouthfeel_vars.items() if v.get() == 1],
     }
-    
-    #call find best matches function
+    # call find best matches function
     matches = find_best_matches(df_1, selections, top_n=5)
     if matches:
-        best = matches[0]
-        open_secondary_window(best)
+        # show list so user can pick one
+        show_results_list(matches)
     else:
-         messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
-
-    '''
-    # === 真正從 CSV 篩選推薦調酒 ===
-    filtered_df = df_1.copy()
-    print(filtered_df)
-
-    filtered_df = filtered_df[filtered_df["sweetness"] == selected_options["sweetness"]]
-    filtered_df = filtered_df[filtered_df["sourness"] == selected_options["sourness"]]
-    filtered_df = filtered_df[filtered_df["alcohol_feeling"] == selected_options["alcohol_feeling"]]
-    filtered_df = filtered_df[filtered_df['Type'] == selected_options['type']]
-
-    # mouthfeel 是多選 → 用 isin 篩選
-    filtered_df = filtered_df[filtered_df["mouthfeel"].isin(selected_options["mouthfeel"])]
-
-    # === 顯示推薦結果 ===
-    if filtered_df.empty:
         messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
-        return
-    recommendation_text = ""
-    for idx, row in filtered_df.head(5).iterrows():
-        recommendation_text += f" {row['drink_name']}｜杯型：{row['glassware']}\n"
-
-    messagebox.showinfo("推薦結果", recommendation_text)
-    '''
 
 #結果的視窗
 def open_secondary_window(result_text):
