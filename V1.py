@@ -108,6 +108,48 @@ def on_fav_double_click(event):
 
 fav_listbox.bind('<Double-1>', on_fav_double_click)
 
+# 刪除選定的最愛項目
+def remove_selected_favorite(path=fav_path):
+    sel = fav_listbox.curselection()
+    if not sel:
+        messagebox.showwarning("提示", "請先選擇要移除的最愛項目。")
+        return
+    idx = sel[0]
+
+    if not os.path.exists(path):
+        messagebox.showinfo("提示", "最愛清單不存在。")
+        return
+
+    try:
+        df = pd.read_csv(path, encoding='utf-8-sig')
+    except Exception as e:
+        messagebox.showerror("錯誤", f"讀取最愛失敗: {e}")
+        return
+
+    if idx >= len(df):
+        messagebox.showerror("錯誤", "選擇的索引超出範圍。")
+        load_favorites()  
+        return
+
+    name = df.iloc[idx].get('drink_name') if 'drink_name' in df.columns else None
+    display_name = name or df.iloc[idx].get('Type') or f"項目 {idx+1}"
+
+    if not messagebox.askyesno("確認刪除", f"確定要將「{display_name}」從最愛移除嗎？"):
+        return
+    
+    df = df.drop(df.index[idx]).reset_index(drop=True)
+    try:
+        df.to_csv(fav_path, index=False, encoding='utf-8-sig')
+    except Exception as e:
+        messagebox.showerror("錯誤", f"寫入最愛失敗: {e}")
+        return
+
+    load_favorites()
+    messagebox.showinfo("已移除", f"已將「{display_name}」從最愛移除。")
+
+remove_btn = ttk.Button(favorites_frame, text="刪除凸顯的", command=remove_selected_favorite)
+remove_btn.pack(anchor='w', pady=(6,0))
+
 # 自動讓視窗最大化
 window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
 
@@ -339,7 +381,6 @@ def save_to_favorites(row, fav_path='最喜歡的.csv', unique_key='drink_name')
                     return
             df_row.to_csv(fav_path, mode='a', header=False, index=False, encoding='utf-8-sig')
         else:
-            # New file: write header
             df_row.to_csv(fav_path, index=False, encoding='utf-8-sig')
 
             messagebox.showinfo("已儲存", "已將此飲料加入最愛。")

@@ -1,2 +1,2 @@
-drink_name,Type,sweetness,sourness,alcohol_feeling,abv,flavor_tags,mouthfeel,ingredients,steps,time,glassware
-Lychee Blossom,Special,中,低,輕,10,荔枝;花香,清爽,"伏特加,荔枝酒,檸檬汁",1. 搖盪\n2. 直接倒出,4,Cocktail
+﻿drink_name,Type,sweetness,sourness,alcohol_feeling,abv,flavor_tags,mouthfeel,ingredients,steps,time,glassware
+Old Fashioned,Classic,低,低,重,32,苦味,濃郁,"威士忌,糖,苦精",1. 壓糖與苦精\n2. 加威士忌攪拌,5,Rocks
