@@ -4,6 +4,8 @@ from tkinter import messagebox
 from tkinter import Frame, BOTTOM, TOP, LEFT, RIGHT
 import pandas as pd
 from tkinter import ttk
+import os
+import shutil
 
 #主要的視窗
 window = tk.Tk()
@@ -57,19 +59,61 @@ rightFrame.pack(side=LEFT, fill='both', expand=True, padx=10, pady=10)
 bottomFrame = Frame(frame_filter)
 bottomFrame.pack(side=BOTTOM, fill='x')
 
+# 顯示最喜歡的（前5個）
+fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')  
+
+favorites_frame = tk.Frame(rightFrame)
+favorites_frame.pack(anchor='n', pady=6)
+
+fav_title = tk.Label(favorites_frame, text="我的最愛 (前5)", font=(None, 11, 'bold'))
+fav_title.pack(anchor='w')
+
+fav_listbox = tk.Listbox(favorites_frame, width=40, height=5)
+fav_listbox.pack(anchor='w', pady=(4,0))
+
+def load_favorites(path=fav_path, limit=5):
+    fav_listbox.delete(0, 'end')
+    if not os.path.exists(path):
+        fav_listbox.insert('end', "(最愛清單為空)")
+        return
+    try:
+        df = pd.read_csv(path, encoding='utf-8-sig')
+        if df.empty:
+            fav_listbox.insert('end', "(最愛清單為空)")
+            return
+        for i, (_, row) in enumerate(df.head(limit).iterrows()):
+            name = None
+            if 'drink_name' in df.columns:
+                name = row.get('drink_name')
+            if not name and 'Type' in df.columns:
+                name = row.get('Type')
+            if not name:
+                name = str(row.to_dict())
+            fav_listbox.insert('end', f"{i+1}. {name}")
+    except Exception as e:
+        fav_listbox.insert('end', f"(讀取最愛失敗: {e})")
+
+load_favorites()
+
+# 雙擊最愛列表項以打開詳細視窗
+def on_fav_double_click(event):
+    sel = fav_listbox.curselection()
+    if not sel:
+        return
+    idx = sel[0]
+    df = pd.read_csv(fav_path, encoding='utf-8-sig')
+    if idx < len(df):
+        row = df.iloc[idx].to_dict()
+        open_secondary_window({'score': 1.0, 'row': row})
+
+fav_listbox.bind('<Double-1>', on_fav_double_click)
+
 # 自動讓視窗最大化
 window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
 
 # 標題放在頂部
 title_label = tk.Label(topFrame, text="酒吧管理系统", font=(None, 18))
 title_label.pack(pady=12)
-
-# 右側顯示區（例如：材料清單與時間管理占位）
-materials_label = tk.Label(rightFrame, text="材料清單")
-materials_label.pack(anchor='n', pady=10)
-
-time_label = tk.Label(rightFrame, text="時間管理")
-time_label.pack(anchor='n', pady=10)
 
 # options 按鈕 - 使用正確的 IntVar / StringVar 變量
 # mouthfeel checkbuttons
@@ -222,11 +266,9 @@ def find_best_matches(df, selections, top_n=3):
 
 # 畫面 2：結果清單
 def show_results_list(matches):
-    '''
     if not matches:
         messagebox.showinfo("推薦結果", "沒有推薦結果可顯示。")
         return
-    '''
         
     frame_filter.pack_forget()
     frame_detail.pack_forget()
@@ -236,7 +278,6 @@ def show_results_list(matches):
         w.destroy()
 
     tk.Label(frame_list, text="符合條件的調酒", font=(None, 20)).pack(pady=15)
-    print(matches)
     for drink in matches:
         row = Frame(frame_list)
         row.pack(pady=5)
@@ -280,6 +321,32 @@ def accumulate_choices():
         show_results_list(matches)
     else:
         messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
+
+#保存到最愛功能 (placeholder)
+def save_to_favorites(row, fav_path='最喜歡的.csv', unique_key='drink_name'):    
+    try:
+        # Dataframe 一個咧
+        df_row = pd.DataFrame([row])
+
+        #如果已經存在
+        if os.path.exists(fav_path):
+            df_exist = pd.read_csv(fav_path, encoding='utf-8-sig')
+            # 檢查重複
+            if unique_key and unique_key in df_exist.columns and unique_key in df_row.columns:
+                val = df_row.iloc[0].get(unique_key)
+                if val in df_exist[unique_key].astype(str).values:
+                    messagebox.showinfo("已存在", f"「{val}」已在最愛清單中。")
+                    return
+            df_row.to_csv(fav_path, mode='a', header=False, index=False, encoding='utf-8-sig')
+        else:
+            # New file: write header
+            df_row.to_csv(fav_path, index=False, encoding='utf-8-sig')
+
+            messagebox.showinfo("已儲存", "已將此飲料加入最愛。")
+        
+        load_favorites()  # 重新載入最愛清單
+    except Exception as e:
+        messagebox.showerror("錯誤", f"儲存失敗：{e}")
 
 #結果的視窗
 def open_secondary_window(result_text):
@@ -330,10 +397,18 @@ def open_secondary_window(result_text):
     notice_label = tk.Label(secondary_window, text="通知: 您尋找的飲料是最相似性的, 不一定會直接配偶您點按的選項", fg="red")
     notice_label.place(x=200, y=500)
 
+    #保存到最愛按鈕 
+    button_save = ttk.Button(
+        secondary_window,
+        text="保存到最愛",
+        command=lambda: save_to_favorites(result_text['row'], fav_path='最喜歡的.csv')
+    )
+    button_save.place(x=200, y=450)
+
     #離開按鈕
     button_close = ttk.Button(
         secondary_window,
-        text="Close window",
+        text="關閉視窗",
         command=secondary_window.destroy
     )
     button_close.place(x=50, y=500)
