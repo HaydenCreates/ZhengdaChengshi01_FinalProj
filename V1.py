@@ -11,6 +11,8 @@ import os
 window = tk.Tk()
 window.title("酒吧管理系统")
 
+window.iconphoto(False, tk.PhotoImage(file="icon.png"))
+
 # 增加字體大小以提升可讀性
 base_font_size = 12
 try:
@@ -24,11 +26,11 @@ try:
 except Exception:
     pass
 
-#read data from CSV
+#讀CSV檔案
 file_path= "程式設計期末專題-酒譜 - 工作表1.csv"
 df_1 = pd.read_csv(file_path)
 
-#options
+#選項
 type = df_1["Type"].drop_duplicates().tolist()
 sweetness = df_1["sweetness"].drop_duplicates().tolist()
 sweetness.sort()
@@ -44,7 +46,7 @@ glassware = df_1["glassware"].drop_duplicates().tolist()
 
 selected_options = {} #提出結果以後，需要刪除所有選項
 
-#functions
+#函式
 def exit_app():
     window.destroy()
     messagebox.showinfo("退出", "已退出酒吧管理系统")
@@ -488,7 +490,7 @@ def open_secondary_window(result_text):
     close_btn = ttk.Button(btn_frame, text='關閉', command=secondary_window.destroy)
     close_btn.pack(side='left')
 
-# 確認和離開按鈕（靠右排列、間距一致）
+# 確認和離開按鈕
 btn_right = tk.Frame(bottomFrame)
 btn_right.pack(side=RIGHT, padx=12, pady=10)
 
@@ -497,7 +499,5 @@ button.pack(side=LEFT, padx=(0,8))
 
 exit_button = tk.Button(btn_right, text="離開", command=exit_app, width=10, height=8)
 exit_button.pack(side=LEFT)
-
-#如果我們有時間，可以讓用戶儲存他們最喜歡的飲料配方
 
 window.mainloop()
