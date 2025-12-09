@@ -171,7 +171,6 @@ remove_btn.pack(anchor='w', pady=(6,0))
 # 自動讓視窗最大化
 window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
 
-# Build filter UI (left side) from current dataframe
 def build_filter_ui():
     global mouthfeel_vars, sweetness_var, sourness_var, alcohol_var, type_var, type_combobox
     # refresh option lists from df_1
@@ -268,56 +267,6 @@ def back_to_home_from_admin():
 
 manage_btn = tk.Button(topFrame, text='管理酒譜', command=show_admin_panel)
 manage_btn.pack(side=RIGHT, padx=6)
-
-# options 按鈕 - 使用 LabelFrames 分組使版面更整齊
-mouthfeel_vars = {}
-
-mouthfeel_frame = ttk.LabelFrame(leftFrame, text='Mouthfeel')
-mouthfeel_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
-
-# 如果 mouthfeel 選項很多，放入可滾動區塊（簡單實作：固定高度）
-mf_inner = tk.Frame(mouthfeel_frame)
-mf_inner.pack(fill='both', expand=True)
-for option in mouthfeel:
-    var = tk.IntVar()
-    mouthfeel_vars[option] = var
-    cb = tk.Checkbutton(mf_inner, text=option, variable=var)
-    cb.pack(anchor='w', padx=6, pady=2)
-
-# Taste group（把甜度、酸度、酒感分成小區塊）
-taste_frame = ttk.LabelFrame(leftFrame, text='Taste / Feeling')
-taste_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
-
-sweetness_var = tk.StringVar()
-sw_frame = tk.Frame(taste_frame)
-sw_frame.pack(fill='x', padx=6, pady=(4,0))
-tk.Label(sw_frame, text='Sweetness:', width=12, anchor='w').pack(side=LEFT)
-for option in sweetness:
-    rb = tk.Radiobutton(sw_frame, text=option, variable=sweetness_var, value=option)
-    rb.pack(side=LEFT, padx=4)
-
-sourness_var = tk.StringVar()
-so_frame = tk.Frame(taste_frame)
-so_frame.pack(fill='x', padx=6, pady=(6,0))
-tk.Label(so_frame, text='Sourness:', width=12, anchor='w').pack(side=LEFT)
-for option in sourness:
-    rb = tk.Radiobutton(so_frame, text=option, variable=sourness_var, value=option)
-    rb.pack(side=LEFT, padx=4)
-
-alcohol_var = tk.StringVar()
-al_frame = tk.Frame(taste_frame)
-al_frame.pack(fill='x', padx=6, pady=(6,6))
-tk.Label(al_frame, text='Alcohol:', width=12, anchor='w').pack(side=LEFT)
-for option in alcohol_feeling:
-    rb = tk.Radiobutton(al_frame, text=option, variable=alcohol_var, value=option)
-    rb.pack(side=LEFT, padx=4)
-
-# Comboboxes / Type
-type_frame = ttk.LabelFrame(leftFrame, text='Type')
-type_frame.pack(fill='x', expand=False, padx=4, pady=(0,8))
-type_var = tk.StringVar()
-type_combobox = ttk.Combobox(type_frame, textvariable=type_var, values=type, width=30)
-type_combobox.pack(anchor='w', padx=6, pady=6)
 
 # Utility helpers
 def normalize_text(s):
