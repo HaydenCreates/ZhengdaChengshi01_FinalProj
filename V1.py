@@ -4,12 +4,25 @@ from tkinter import messagebox
 from tkinter import Frame, BOTTOM, TOP, LEFT, RIGHT
 import pandas as pd
 from tkinter import ttk
+import tkinter.font as tkfont
 import os
-import shutil
 
 #主要的視窗
 window = tk.Tk()
 window.title("酒吧管理系统")
+
+# 增加字體大小以提升可讀性
+base_font_size = 12
+try:
+    default_font = tkfont.nametofont("TkDefaultFont")
+    default_font.configure(size=base_font_size)
+except Exception:
+    pass
+try:
+    text_font = tkfont.nametofont("TkTextFont")
+    text_font.configure(size=base_font_size)
+except Exception:
+    pass
 
 #read data from CSV
 file_path= "程式設計期末專題-酒譜 - 工作表1.csv"
@@ -65,7 +78,7 @@ fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')
 favorites_frame = tk.Frame(rightFrame)
 favorites_frame.pack(anchor='n', pady=6)
 
-fav_title = tk.Label(favorites_frame, text="我的最愛 (前5)", font=(None, 11, 'bold'))
+fav_title = tk.Label(favorites_frame, text="我的最愛 (前5)", font=(None, 12, 'bold'))
 fav_title.pack(anchor='w')
 
 fav_listbox = tk.Listbox(favorites_frame, width=40, height=5)
@@ -151,10 +164,10 @@ remove_btn = ttk.Button(favorites_frame, text="刪除凸顯的", command=remove_
 remove_btn.pack(anchor='w', pady=(6,0))
 
 # 自動讓視窗最大化
-window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
+window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -500, window.winfo_screenheight() -300))
 
 # 標題放在頂部
-title_label = tk.Label(topFrame, text="酒吧管理系统", font=(None, 18))
+title_label = tk.Label(topFrame, text="酒吧管理系统", font=(None, 20))
 title_label.pack(pady=12)
 
 # options 按鈕 - 使用 LabelFrames 分組使版面更整齊
@@ -329,7 +342,7 @@ def show_results_list(matches):
     for w in frame_list.winfo_children():
         w.destroy()
 
-    tk.Label(frame_list, text="符合條件的調酒", font=(None, 20)).pack(pady=15)
+    tk.Label(frame_list, text="符合條件的調酒", font=(None, 22)).pack(pady=15)
     for drink in matches:
         row = Frame(frame_list)
         row.pack(pady=5)
@@ -401,12 +414,10 @@ def save_to_favorites(row, fav_path='最喜歡的.csv', unique_key='drink_name')
 
 #結果的視窗
 def open_secondary_window(result_text):
-    # Create secondary (or popup) window and layout with frames
     secondary_window = tk.Toplevel()
     secondary_window.title(result_text['row'].get('drink_name', 'Details'))
     secondary_window.minsize(640, 420)
 
-    # Root frames
     main_frame = ttk.Frame(secondary_window, padding=12)
     main_frame.pack(fill='both', expand=True)
 
@@ -416,9 +427,9 @@ def open_secondary_window(result_text):
     right_col = ttk.Frame(main_frame)
     right_col.pack(side='left', fill='both', expand=True)
 
-    # LEFT: basic info labels
+    # =左邊: 基本資訊
     name_text = result_text['row'].get('drink_name') or result_text['row'].get('Type') or 'Unnamed'
-    name_lbl = ttk.Label(left_col, text=name_text, font=(None, 14, 'bold'))
+    name_lbl = ttk.Label(left_col, text=name_text, font=(None, 16, 'bold'))
     name_lbl.pack(anchor='nw', pady=(0,8))
 
     info_items = [
@@ -439,14 +450,14 @@ def open_secondary_window(result_text):
         ttk.Label(row, text=f"{label}:", width=14, anchor='w').pack(side='left')
         ttk.Label(row, text=str(val)).pack(side='left')
 
-    # RIGHT: Ingredients and Steps (scrollable)
-    ttk.Label(right_col, text='Ingredients', font=(None, 11, 'bold')).pack(anchor='nw')
+    # 右邊: 成分和步驟
+    ttk.Label(right_col, text='Ingredients', font=(None, 12, 'bold')).pack(anchor='nw')
     ingredients_text = tk.Text(right_col, height=6, wrap='word')
     ingredients_text.pack(fill='x', pady=(4,8))
     ingredients_text.insert('1.0', str(result_text['row'].get('ingredients', '')))
     ingredients_text.configure(state='disabled')
 
-    ttk.Label(right_col, text='Steps', font=(None, 11, 'bold')).pack(anchor='nw')
+    ttk.Label(right_col, text='Steps', font=(None, 12, 'bold')).pack(anchor='nw')
     steps_frame = ttk.Frame(right_col)
     steps_frame.pack(fill='both', expand=True)
 
@@ -461,7 +472,7 @@ def open_secondary_window(result_text):
         steps_text.insert('end', f"Step {i+1}: {s}\n\n")
     steps_text.configure(state='disabled')
 
-    # Footer buttons
+    # 下面的按鈕區域
     footer = ttk.Frame(secondary_window, padding=(12,8))
     footer.pack(fill='x')
 
@@ -481,10 +492,10 @@ def open_secondary_window(result_text):
 btn_right = tk.Frame(bottomFrame)
 btn_right.pack(side=RIGHT, padx=12, pady=10)
 
-button = tk.Button(btn_right, text="確認", command=accumulate_choices)
+button = tk.Button(btn_right, text="確認", command=accumulate_choices, width=10, height=8)
 button.pack(side=LEFT, padx=(0,8))
 
-exit_button = tk.Button(btn_right, text="離開", command=exit_app)
+exit_button = tk.Button(btn_right, text="離開", command=exit_app, width=10, height=8)
 exit_button.pack(side=LEFT)
 
 #如果我們有時間，可以讓用戶儲存他們最喜歡的飲料配方
