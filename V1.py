@@ -157,45 +157,55 @@ window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.win
 title_label = tk.Label(topFrame, text="酒吧管理系统", font=(None, 18))
 title_label.pack(pady=12)
 
-# options 按鈕 - 使用正確的 IntVar / StringVar 變量
-# mouthfeel checkbuttons
+# options 按鈕 - 使用 LabelFrames 分組使版面更整齊
 mouthfeel_vars = {}
-mouthfeel_label = tk.Label(leftFrame, text="Mouthfeel Options:")
-mouthfeel_label.pack(anchor='w', pady=(0,6))
+
+mouthfeel_frame = ttk.LabelFrame(leftFrame, text='Mouthfeel')
+mouthfeel_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
+
+# 如果 mouthfeel 選項很多，放入可滾動區塊（簡單實作：固定高度）
+mf_inner = tk.Frame(mouthfeel_frame)
+mf_inner.pack(fill='both', expand=True)
 for option in mouthfeel:
     var = tk.IntVar()
     mouthfeel_vars[option] = var
-    cb = tk.Checkbutton(leftFrame, text=option, variable=var)
-    cb.pack(anchor='w')
+    cb = tk.Checkbutton(mf_inner, text=option, variable=var)
+    cb.pack(anchor='w', padx=6, pady=2)
 
-# radio button groups
+# Taste group（把甜度、酸度、酒感分成小區塊）
+taste_frame = ttk.LabelFrame(leftFrame, text='Taste / Feeling')
+taste_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
+
 sweetness_var = tk.StringVar()
-sweetness_label = tk.Label(leftFrame, text="Sweetness Options:")
-sweetness_label.pack(anchor='w', pady=(8,6))
+sw_frame = tk.Frame(taste_frame)
+sw_frame.pack(fill='x', padx=6, pady=(4,0))
+tk.Label(sw_frame, text='Sweetness:', width=12, anchor='w').pack(side=LEFT)
 for option in sweetness:
-    rb = tk.Radiobutton(leftFrame, text=option, variable=sweetness_var, value=option)
-    rb.pack(anchor='w')
+    rb = tk.Radiobutton(sw_frame, text=option, variable=sweetness_var, value=option)
+    rb.pack(side=LEFT, padx=4)
 
 sourness_var = tk.StringVar()
-sourness_label = tk.Label(leftFrame, text="Sourness Options:")
-sourness_label.pack(anchor='w', pady=(8,6))
+so_frame = tk.Frame(taste_frame)
+so_frame.pack(fill='x', padx=6, pady=(6,0))
+tk.Label(so_frame, text='Sourness:', width=12, anchor='w').pack(side=LEFT)
 for option in sourness:
-    rb = tk.Radiobutton(leftFrame, text=option, variable=sourness_var, value=option)
-    rb.pack(anchor='w')
+    rb = tk.Radiobutton(so_frame, text=option, variable=sourness_var, value=option)
+    rb.pack(side=LEFT, padx=4)
 
 alcohol_var = tk.StringVar()
-alcohol_label = tk.Label(leftFrame, text="Alcohol Feeling Options:")
-alcohol_label.pack(anchor='w', pady=(8,6))
+al_frame = tk.Frame(taste_frame)
+al_frame.pack(fill='x', padx=6, pady=(6,6))
+tk.Label(al_frame, text='Alcohol:', width=12, anchor='w').pack(side=LEFT)
 for option in alcohol_feeling:
-    rb = tk.Radiobutton(leftFrame, text=option, variable=alcohol_var, value=option)
-    rb.pack(anchor='w')
+    rb = tk.Radiobutton(al_frame, text=option, variable=alcohol_var, value=option)
+    rb.pack(side=LEFT, padx=4)
 
-# Comboboxes
-type_label = tk.Label(leftFrame, text="Type Options:")
-type_label.pack(anchor='w', pady=(8,6))
+# Comboboxes / Type
+type_frame = ttk.LabelFrame(leftFrame, text='Type')
+type_frame.pack(fill='x', expand=False, padx=4, pady=(0,8))
 type_var = tk.StringVar()
-type_combobox = ttk.Combobox(leftFrame, textvariable=type_var, values=type)
-type_combobox.pack(anchor='w', pady=4)
+type_combobox = ttk.Combobox(type_frame, textvariable=type_var, values=type, width=30)
+type_combobox.pack(anchor='w', padx=6, pady=6)
 
 # Utility helpers
 def normalize_text(s):
@@ -391,76 +401,91 @@ def save_to_favorites(row, fav_path='最喜歡的.csv', unique_key='drink_name')
 
 #結果的視窗
 def open_secondary_window(result_text):
-    # Create secondary (or popup) window.
+    # Create secondary (or popup) window and layout with frames
     secondary_window = tk.Toplevel()
-    secondary_window.title("Secondary Window")
-    secondary_window.config(width=600, height=600)
-    
-    #顯示結果
-    drink_name = tk.Label(secondary_window, text=result_text['row']['drink_name'], font=(None, 16))
-    drink_name.place(x=50, y=20)
+    secondary_window.title(result_text['row'].get('drink_name', 'Details'))
+    secondary_window.minsize(640, 420)
 
-    ingredients = tk.Label(secondary_window, text="Ingredients: " + str(result_text['row']['ingredients']))
-    ingredients.place(x=50, y=50)
+    # Root frames
+    main_frame = ttk.Frame(secondary_window, padding=12)
+    main_frame.pack(fill='both', expand=True)
 
-    final_steps = str(result_text['row']['steps']).split("\\n")
-    for i in range(len(final_steps)):
-        step_label = tk.Label(secondary_window, text=f"Step {i+1}: {final_steps[i]}")
-        step_label.place(x=325, y=50 + i*40)
+    left_col = ttk.Frame(main_frame)
+    left_col.pack(side='left', fill='y', padx=(0,12))
 
-    mouthfeel = tk.Label(secondary_window, text="Mouthfeel: " + str(result_text['row']['mouthfeel']))
-    mouthfeel.place(x=50, y=80)
+    right_col = ttk.Frame(main_frame)
+    right_col.pack(side='left', fill='both', expand=True)
 
-    flavor_tags = tk.Label(secondary_window, text="Flavor Tags: " + str(result_text['row']['flavor_tags']))
-    flavor_tags.place(x=50, y=120)
+    # LEFT: basic info labels
+    name_text = result_text['row'].get('drink_name') or result_text['row'].get('Type') or 'Unnamed'
+    name_lbl = ttk.Label(left_col, text=name_text, font=(None, 14, 'bold'))
+    name_lbl.pack(anchor='nw', pady=(0,8))
 
-    alcohol_feeling = tk.Label(secondary_window, text="Alcohol Feeling: " + str(result_text['row']['alcohol_feeling']))
-    alcohol_feeling.place(x=50, y= 160)
+    info_items = [
+        ('Type', result_text['row'].get('Type', '')),
+        ('Glassware', result_text['row'].get('glassware', '')),
+        ('ABV', result_text['row'].get('abv', '')),
+        ('Time', result_text['row'].get('time', '')),
+        ('Sourness', result_text['row'].get('sourness', '')),
+        ('Sweetness', result_text['row'].get('sweetness', '')),
+        ('Alcohol Feeling', result_text['row'].get('alcohol_feeling', '')),
+        ('Mouthfeel', result_text['row'].get('mouthfeel', '')),
+        ('Flavor Tags', result_text['row'].get('flavor_tags', '')),
+    ]
 
-    time_label = tk.Label(secondary_window, text="Time: " + str(result_text['row']['time']))
-    time_label.place(x=50, y=200)
+    for label, val in info_items:
+        row = ttk.Frame(left_col)
+        row.pack(anchor='w', pady=2, fill='x')
+        ttk.Label(row, text=f"{label}:", width=14, anchor='w').pack(side='left')
+        ttk.Label(row, text=str(val)).pack(side='left')
 
-    type_label = tk.Label(secondary_window, text="Type: " + str(result_text['row']['Type']))
-    type_label.place(x=50, y=240)
+    # RIGHT: Ingredients and Steps (scrollable)
+    ttk.Label(right_col, text='Ingredients', font=(None, 11, 'bold')).pack(anchor='nw')
+    ingredients_text = tk.Text(right_col, height=6, wrap='word')
+    ingredients_text.pack(fill='x', pady=(4,8))
+    ingredients_text.insert('1.0', str(result_text['row'].get('ingredients', '')))
+    ingredients_text.configure(state='disabled')
 
-    glassware_label = tk.Label(secondary_window, text="Glassware: " + str(result_text['row']['glassware']))
-    glassware_label.place(x=50, y=280)
+    ttk.Label(right_col, text='Steps', font=(None, 11, 'bold')).pack(anchor='nw')
+    steps_frame = ttk.Frame(right_col)
+    steps_frame.pack(fill='both', expand=True)
 
-    abv_label = tk.Label(secondary_window, text="ABV: " + str(result_text['row']['abv']))
-    abv_label.place(x=50, y=320)
+    steps_text = tk.Text(steps_frame, wrap='word')
+    steps_vsb = ttk.Scrollbar(steps_frame, orient='vertical', command=steps_text.yview)
+    steps_text.configure(yscrollcommand=steps_vsb.set)
+    steps_vsb.pack(side='right', fill='y')
+    steps_text.pack(side='left', fill='both', expand=True)
 
-    sourness_label = tk.Label(secondary_window, text="Sourness: " + str(result_text['row']['sourness']))
-    sourness_label.place(x=50, y= 360)
-    
-    sweetness_label = tk.Label(secondary_window, text="Sweetness: " + str(result_text['row']['sweetness']))
-    sweetness_label.place(x=50, y=400)
+    final_steps = str(result_text['row'].get('steps', '')).split("\\n")
+    for i, s in enumerate(final_steps):
+        steps_text.insert('end', f"Step {i+1}: {s}\n\n")
+    steps_text.configure(state='disabled')
 
-    notice_label = tk.Label(secondary_window, text="通知: 您尋找的飲料是最相似性的, 不一定會直接配偶您點按的選項", fg="red")
-    notice_label.place(x=200, y=500)
+    # Footer buttons
+    footer = ttk.Frame(secondary_window, padding=(12,8))
+    footer.pack(fill='x')
 
-    #保存到最愛按鈕 
-    button_save = ttk.Button(
-        secondary_window,
-        text="保存到最愛",
-        command=lambda: save_to_favorites(result_text['row'], fav_path='最喜歡的.csv')
-    )
-    button_save.place(x=200, y=450)
+    notice = ttk.Label(footer, text="通知: 推薦為相似性最高的選項，可能不完全符合所有選擇", foreground='red')
+    notice.pack(side='left')
 
-    #離開按鈕
-    button_close = ttk.Button(
-        secondary_window,
-        text="關閉視窗",
-        command=secondary_window.destroy
-    )
-    button_close.place(x=50, y=500)
+    btn_frame = ttk.Frame(footer)
+    btn_frame.pack(side='right')
 
-#確認按鈕
-button = tk.Button(bottomFrame, text="確認", command=accumulate_choices) 
-button.pack(pady=10)
+    save_btn = ttk.Button(btn_frame, text='保存到最愛', command=lambda: save_to_favorites(result_text['row'], fav_path='最喜歡的.csv'))
+    save_btn.pack(side='left', padx=(0,8))
 
-#離開按鈕
-exit_button = tk.Button(bottomFrame, text="離開", command=exit_app)
-exit_button.pack(pady=10) 
+    close_btn = ttk.Button(btn_frame, text='關閉', command=secondary_window.destroy)
+    close_btn.pack(side='left')
+
+# 確認和離開按鈕（靠右排列、間距一致）
+btn_right = tk.Frame(bottomFrame)
+btn_right.pack(side=RIGHT, padx=12, pady=10)
+
+button = tk.Button(btn_right, text="確認", command=accumulate_choices)
+button.pack(side=LEFT, padx=(0,8))
+
+exit_button = tk.Button(btn_right, text="離開", command=exit_app)
+exit_button.pack(side=LEFT)
 
 #如果我們有時間，可以讓用戶儲存他們最喜歡的飲料配方
 
