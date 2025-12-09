@@ -1,4 +1,4 @@
-drink_name,Type,sweetness,sourness,alcohol_feeling,abv,flavor_tags,mouthfeel,ingredients,steps,time,glassware
+﻿drink_name,Type,sweetness,sourness,alcohol_feeling,abv,flavor_tags,mouthfeel,ingredients,steps,time,glassware
 Mojito,Classic,中,中,輕,10,薄荷;柑橘,氣泡,"蘭姆酒,萊姆汁,薄荷葉,糖,蘇打水",1. 壓碎薄荷與糖\n2. 加萊姆汁與蘭姆酒\n3. 加冰塊加入蘇打水\n4. 攪拌,5,Highball
 Daiquiri,Classic,中,重,中,20,柑橘,清爽,"蘭姆酒,萊姆汁,糖",1. 混合所有材料\n2. 搖盪後濾出,4,Cocktail
 Margarita,Classic,中,重,中,25,柑橘,清爽,"龍舌蘭,柑橘酒,萊姆汁",1. 搖盪材料\n2. 鹽口杯盛裝,4,Margarita Glass

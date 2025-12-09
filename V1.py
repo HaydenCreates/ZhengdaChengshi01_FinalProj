@@ -44,7 +44,7 @@ ingredients = df_1["ingredients"].drop_duplicates().tolist()
 time = df_1["time"].drop_duplicates().tolist()
 glassware = df_1["glassware"].drop_duplicates().tolist()
 
-selected_options = {} #提出結果以後，需要刪除所有選項
+selected_options = {}
 
 #函式
 def exit_app():
@@ -56,6 +56,9 @@ def exit_app():
 frame_filter = Frame(window)
 frame_list = Frame(window)
 frame_detail = Frame(window)
+
+# 管理用畫面
+frame_admin = Frame(window)
 
 frame_filter.pack(fill="both", expand=True)
 
@@ -166,11 +169,105 @@ remove_btn = ttk.Button(favorites_frame, text="刪除凸顯的", command=remove_
 remove_btn.pack(anchor='w', pady=(6,0))
 
 # 自動讓視窗最大化
-window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -500, window.winfo_screenheight() -300))
+window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
+
+# Build filter UI (left side) from current dataframe
+def build_filter_ui():
+    global mouthfeel_vars, sweetness_var, sourness_var, alcohol_var, type_var, type_combobox
+    # refresh option lists from df_1
+    try:
+        types = df_1['Type'].drop_duplicates().tolist()
+    except Exception:
+        types = []
+    try:
+        sweets = df_1['sweetness'].drop_duplicates().tolist()
+    except Exception:
+        sweets = []
+    try:
+        sours = df_1['sourness'].drop_duplicates().tolist()
+    except Exception:
+        sours = []
+    try:
+        alcohols = df_1['alcohol_feeling'].drop_duplicates().tolist()
+    except Exception:
+        alcohols = []
+    try:
+        mouthfeels = df_1['mouthfeel'].drop_duplicates().tolist()
+    except Exception:
+        mouthfeels = []
+
+    # clear leftFrame
+    for w in leftFrame.winfo_children():
+        w.destroy()
+
+    # mouthfeel
+    mouthfeel_vars = {}
+    mouthfeel_frame = ttk.LabelFrame(leftFrame, text='Mouthfeel')
+    mouthfeel_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
+    mf_inner = tk.Frame(mouthfeel_frame)
+    mf_inner.pack(fill='both', expand=True)
+    for option in mouthfeels:
+        var = tk.IntVar()
+        mouthfeel_vars[option] = var
+        cb = tk.Checkbutton(mf_inner, text=option, variable=var)
+        cb.pack(anchor='w', padx=6, pady=2)
+
+    # Taste group
+    taste_frame = ttk.LabelFrame(leftFrame, text='Taste / Feeling')
+    taste_frame.pack(fill='both', expand=False, padx=4, pady=(0,8))
+
+    sweetness_var = tk.StringVar()
+    sw_frame = tk.Frame(taste_frame)
+    sw_frame.pack(fill='x', padx=6, pady=(4,0))
+    tk.Label(sw_frame, text='Sweetness:', width=12, anchor='w').pack(side=LEFT)
+    for option in sweets:
+        rb = tk.Radiobutton(sw_frame, text=option, variable=sweetness_var, value=option)
+        rb.pack(side=LEFT, padx=4)
+
+    sourness_var = tk.StringVar()
+    so_frame = tk.Frame(taste_frame)
+    so_frame.pack(fill='x', padx=6, pady=(6,0))
+    tk.Label(so_frame, text='Sourness:', width=12, anchor='w').pack(side=LEFT)
+    for option in sours:
+        rb = tk.Radiobutton(so_frame, text=option, variable=sourness_var, value=option)
+        rb.pack(side=LEFT, padx=4)
+
+    alcohol_var = tk.StringVar()
+    al_frame = tk.Frame(taste_frame)
+    al_frame.pack(fill='x', padx=6, pady=(6,6))
+    tk.Label(al_frame, text='Alcohol:', width=12, anchor='w').pack(side=LEFT)
+    for option in alcohols:
+        rb = tk.Radiobutton(al_frame, text=option, variable=alcohol_var, value=option)
+        rb.pack(side=LEFT, padx=4)
+
+    # Type combobox
+    type_frame = ttk.LabelFrame(leftFrame, text='Type')
+    type_frame.pack(fill='x', expand=False, padx=4, pady=(0,8))
+    type_var = tk.StringVar()
+    type_combobox = ttk.Combobox(type_frame, textvariable=type_var, values=types, width=30)
+    type_combobox.pack(anchor='w', padx=6, pady=6)
+
+# initial build
+build_filter_ui()
 
 # 標題放在頂部
 title_label = tk.Label(topFrame, text="酒吧管理系统", font=(None, 20))
 title_label.pack(pady=12)
+
+# 管理酒譜按鈕（切換到 admin 面板）
+def show_admin_panel():
+    frame_filter.pack_forget()
+    frame_list.pack_forget()
+    frame_detail.pack_forget()
+    frame_admin.pack(fill='both', expand=True)
+    build_admin_ui()
+
+def back_to_home_from_admin():
+    frame_admin.pack_forget()
+    frame_filter.pack(fill='both', expand=True)
+
+manage_btn = tk.Button(topFrame, text='管理酒譜', command=show_admin_panel)
+manage_btn.pack(side=RIGHT, padx=6)
 
 # options 按鈕 - 使用 LabelFrames 分組使版面更整齊
 mouthfeel_vars = {}
@@ -366,6 +463,116 @@ def show_results_list(matches):
 def back_to_filter():
     frame_list.pack_forget()
     frame_filter.pack(fill="both", expand=True)
+
+#UI
+def build_admin_ui():
+    for w in frame_admin.winfo_children():
+        w.destroy()
+
+    header = tk.Label(frame_admin, text='酒譜管理', font=(None, 18, 'bold'))
+    header.pack(pady=8)
+
+    # 列出酒譜的表格
+    cols = ('drink_name', 'Type', 'glassware', 'time', 'abv')
+    tree = ttk.Treeview(frame_admin, columns=cols, show='headings', selectmode='browse')
+    for c in cols:
+        tree.heading(c, text=c)
+        tree.column(c, width=140, anchor='w')
+
+    vsb = ttk.Scrollbar(frame_admin, orient='vertical', command=tree.yview)
+    tree.configure(yscrollcommand=vsb.set)
+    vsb.pack(side=RIGHT, fill='y')
+    tree.pack(fill='both', expand=True, padx=8, pady=8)
+
+    # 加載資料到表格
+    for idx, r in df_1.iterrows():
+        vals = [str(r.get(c, '')) for c in cols]
+        tree.insert('', 'end', iid=str(idx), values=vals)
+
+    # 按鈕區域
+    btn_frame = tk.Frame(frame_admin)
+    btn_frame.pack(fill='x', pady=(0,8))
+
+    def refresh():
+        # 
+        nonlocal tree
+        try:
+            global df_1
+            df_1 = pd.read_csv(file_path)
+        except Exception:
+            pass
+        for w in tree.get_children():
+            tree.delete(w)
+        for idx, r in df_1.iterrows():
+            vals = [str(r.get(c, '')) for c in cols]
+            tree.insert('', 'end', iid=str(idx), values=vals)
+
+    def remove_selected():
+        sel = tree.selection()
+        if not sel:
+            messagebox.showwarning('提示', '請先選擇要移除的項目')
+            return
+        idx = int(sel[0])
+        name = df_1.loc[idx].get('drink_name', '') if 'drink_name' in df_1.columns else ''
+        if not messagebox.askyesno('確認', f'確定要刪除「{name}」嗎？'):
+            return
+        # drop and save
+        try:
+            df_1.drop(index=idx, inplace=True)
+            df_1.reset_index(drop=True, inplace=True)
+            df_1.to_csv(file_path, index=False, encoding='utf-8-sig')
+            refresh()
+            messagebox.showinfo('已刪除', '已從資料庫移除該飲料')
+        except Exception as e:
+            messagebox.showerror('錯誤', f'刪除失敗：{e}')
+
+    def add_new():
+        # open a small form to add new drink
+        add_win = tk.Toplevel()
+        add_win.title('新增飲料')
+        fields = ['drink_name','Type','glassware','time','abv','ingredients','steps (加:\n)','mouthfeel','flavor_tags','alcohol_feeling','sourness','sweetness']
+        entries = {}
+        for i, f in enumerate(fields):
+            lbl = tk.Label(add_win, text=f)
+            lbl.grid(row=i, column=0, sticky='e', padx=6, pady=4)
+            ent = tk.Entry(add_win, width=50)
+            ent.grid(row=i, column=1, padx=6, pady=4)
+            entries[f] = ent
+
+        def save_new():
+            new = {f: entries[f].get() for f in fields}
+            try:
+                global df_1
+                # ensure all columns exist
+                for col in new.keys():
+                    if col not in df_1.columns:
+                        df_1[col] = ''
+                # build row matching df_1 columns order
+                row_for_df = {col: new.get(col, '') for col in df_1.columns}
+                df_1 = pd.concat([df_1, pd.DataFrame([row_for_df])], ignore_index=True)
+                df_1.to_csv(file_path, index=False, encoding='utf-8-sig')
+                add_win.destroy()
+                refresh()
+                messagebox.showinfo('已新增', '已新增飲料到資料庫')
+            except Exception as e:
+                messagebox.showerror('錯誤', f'新增失敗：{e}')
+
+        save_btn = tk.Button(add_win, text='儲存', command=save_new)
+        save_btn.grid(row=len(fields), column=0, pady=10)
+        cancel_btn = tk.Button(add_win, text='取消', command=add_win.destroy)
+        cancel_btn.grid(row=len(fields), column=1, pady=10)
+
+    add_btn = tk.Button(btn_frame, text='新增飲料', command=add_new)
+    add_btn.pack(side=LEFT, padx=6)
+
+    remove_btn = tk.Button(btn_frame, text='移除選定', command=remove_selected)
+    remove_btn.pack(side=LEFT, padx=6)
+
+    refresh_btn = tk.Button(btn_frame, text='重新整理', command=refresh)
+    refresh_btn.pack(side=LEFT, padx=6)
+
+    back_btn = tk.Button(btn_frame, text='返回', command=back_to_home_from_admin)
+    back_btn.pack(side=RIGHT, padx=6)
 
 #積累用戶選擇的選項
 def accumulate_choices():
