@@ -1,6 +1,6 @@
 #imported modules
 import tkinter as tk
-from tkinter import Label
+from PIL import Image
 from tkinter import messagebox
 from tkinter import Frame, BOTTOM, TOP, LEFT, RIGHT
 import pandas as pd
@@ -9,17 +9,20 @@ import tkinter.font as tkfont
 import os
 import customtkinter as ctk
 
-ctk.set_appearance_mode("dark") 
-ctk.set_default_color_theme("blue") 
+ctk.set_appearance_mode("light") 
+ctk.set_default_color_theme("green") 
 
 #主要的視窗
-window = ctk.CTk()
+window = ctk.CTk(fg_color="#f0e6d2")
 window.title("酒吧管理系统")
 
 window.iconphoto(False, tk.PhotoImage(file="icon.png"))
-background_image=tk.PhotoImage(file="bar_bg.png")
-label1 = Label(window, image = background_image)
-label1.place(x = 0, y = 0,relwidth=1, relheight=1)
+bg_image = ctk.CTkImage(
+    light_image=Image.open("bar_bg.png"),
+    dark_image=Image.open("bar_bg.png"),
+    size=(800, 600)
+)
+
 
 # 增加字體大小以提升可讀性
 base_font_size = 12
@@ -48,12 +51,14 @@ def exit_app():
 
 # 框架設置：頂部標題、內容（左右兩欄）、底部按鈕
 # 三個主畫面
-frame_filter = ctk.CTkFrame(window)
-frame_list = ctk.CTkFrame(window)
-frame_detail = ctk.CTkFrame(window)
+bg_label = ctk.CTkLabel(window, image=bg_image, text="")
+bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-# 管理用畫面
-frame_admin = ctk.CTkFrame(window)
+frame_filter = ctk.CTkFrame(window, fg_color="transparent")
+frame_list   = ctk.CTkFrame(window, fg_color="transparent")
+frame_detail = ctk.CTkFrame(window, fg_color="transparent")
+frame_admin  = ctk.CTkFrame(window, fg_color="transparent")
+
 
 frame_filter.pack(fill="both", expand=True)
 
@@ -76,13 +81,13 @@ bottomFrame.pack(side=BOTTOM, fill='x')
 fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')  
 
 favorites_frame = ctk.CTkFrame(rightFrame)
-favorites_frame.pack(anchor='n', pady=6)
+favorites_frame.pack(anchor='w', pady=6)
 
 fav_title = ctk.CTkLabel(favorites_frame, text="我的最愛 (前5)", font=(None, 12, 'bold'))
 fav_title.pack(anchor='w')
 
 fav_listbox = tk.Listbox(favorites_frame, width=40, height=5)
-fav_listbox.pack(anchor='w', pady=(4,0))
+fav_listbox.pack(side="left", fill="y")
 
 def load_favorites(path=fav_path, limit=5):
     fav_listbox.delete(0, 'end')
@@ -160,7 +165,7 @@ def remove_selected_favorite(path=fav_path):
     load_favorites()
     messagebox.showinfo("已移除", f"已將「{display_name}」從最愛移除。")
 
-remove_btn = ttk.Button(favorites_frame, text="刪除凸顯的", command=remove_selected_favorite)
+remove_btn = ctk.CTkButton(favorites_frame, text="刪除凸顯的", command=remove_selected_favorite)
 remove_btn.pack(anchor='w', pady=(6,0))
 
 # 自動讓視窗最大化
@@ -429,15 +434,17 @@ def build_admin_ui():
 
     # 列出酒譜的表格
     cols = ('drink_name', 'Type', 'glassware', 'time', 'abv')
-    tree = ttk.Treeview(frame_admin, columns=cols, show='headings', selectmode='browse')
+    table_frame = ctk.CTkFrame(frame_admin)
+    table_frame.pack(fill="both", expand=True, padx=8, pady=8)
+    tree = ttk.Treeview(table_frame, columns=cols, show='headings', selectmode='browse')
     for c in cols:
         tree.heading(c, text=c)
         tree.column(c, width=140, anchor='w')
 
-    vsb = ttk.Scrollbar(frame_admin, orient='vertical', command=tree.yview)
+    vsb = ttk.Scrollbar(table_frame, orient='vertical', command=tree.yview)
     tree.configure(yscrollcommand=vsb.set)
-    vsb.pack(side=RIGHT, fill='y')
-    tree.pack(fill='both', expand=True, padx=8, pady=8)
+    vsb.pack(side="right", fill="y")
+    tree.pack(side="left", fill="both", expand=True)
 
     # 加載資料到表格
     for idx, r in df_1.iterrows():
@@ -580,14 +587,15 @@ def open_secondary_window(result_text):
     secondary_window.title(result_text['row'].get('drink_name', 'Details'))
     secondary_window.minsize(640, 420)
 
-    main_frame = ttk.Frame(secondary_window, padding=12)
-    main_frame.pack(fill='both', expand=True)
+    main_frame = ctk.CTkFrame(secondary_window)
+    main_frame.pack(fill='both', expand=True, padx=12, pady=12)
 
-    left_col = ttk.Frame(main_frame)
-    left_col.pack(side='left', fill='y', padx=(0,12))
+    left_col = ctk.CTkFrame(main_frame)
+    left_col.pack(side="left", fill="y", padx=12)
 
-    right_col = ttk.Frame(main_frame)
-    right_col.pack(side='left', fill='both', expand=True)
+    right_col = ctk.CTkFrame(main_frame)
+    right_col.pack(side="left", fill="both", expand=True)
+
 
     # =左邊: 基本資訊
     name_text = result_text['row'].get('drink_name') or result_text['row'].get('Type') or 'Unnamed'
@@ -620,8 +628,9 @@ def open_secondary_window(result_text):
     ingredients_text.configure(state='disabled')
 
     ttk.Label(right_col, text='Steps', font=(None, 12, 'bold')).pack(anchor='nw')
-    steps_frame = ttk.Frame(right_col)
-    steps_frame.pack(fill='both', expand=True)
+    steps_frame = ctk.CTkFrame(right_col)
+    steps_frame.pack(fill="both", expand=True, pady=6)
+
 
     steps_text = ctk.CTkTextbox(steps_frame, wrap='word')
     steps_vsb = ttk.Scrollbar(steps_frame, orient='vertical', command=steps_text.yview)
