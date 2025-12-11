@@ -1,5 +1,6 @@
 #imported modules
 import tkinter as tk
+from tkinter import PhotoImage, Label
 from tkinter import messagebox
 from tkinter import Frame, BOTTOM, TOP, LEFT, RIGHT
 import pandas as pd
@@ -12,6 +13,9 @@ window = tk.Tk()
 window.title("酒吧管理系统")
 
 window.iconphoto(False, tk.PhotoImage(file="icon.png"))
+#background_image=tk.PhotoImage(file="bar_bg.png")
+#label1 = Label(window, image = background_image)
+#label1.place(x = 0, y = 0,relwidth=1, relheight=1)
 
 # 增加字體大小以提升可讀性
 base_font_size = 12
@@ -30,20 +34,7 @@ except Exception:
 file_path= "程式設計期末專題-酒譜 - 工作表1.csv"
 df_1 = pd.read_csv(file_path)
 
-#選項
-type = df_1["Type"].drop_duplicates().tolist()
-sweetness = df_1["sweetness"].drop_duplicates().tolist()
-sweetness.sort()
-sourness = df_1["sourness"].drop_duplicates().tolist()
-sourness.sort()
-alcohol_feeling = df_1["alcohol_feeling"].drop_duplicates().tolist()
-alcohol_feeling.sort()
-flavors = df_1["flavor_tags"].drop_duplicates().tolist() #not sure yet if this is the best method
-mouthfeel = df_1["mouthfeel"].drop_duplicates().tolist()
-ingredients = df_1["ingredients"].drop_duplicates().tolist()
-time = df_1["time"].drop_duplicates().tolist()
-glassware = df_1["glassware"].drop_duplicates().tolist()
-
+priority_map = {'重': 3, '中': 2, '低': 1}
 selected_options = {}
 
 #函式
@@ -173,21 +164,23 @@ window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.win
 
 def build_filter_ui():
     global mouthfeel_vars, sweetness_var, sourness_var, alcohol_var, type_var, type_combobox
-    # refresh option lists from df_1
     try:
         types = df_1['Type'].drop_duplicates().tolist()
     except Exception:
         types = []
     try:
         sweets = df_1['sweetness'].drop_duplicates().tolist()
+        sweets = sorted(sweets, key=lambda x: priority_map.get(x, 0))
     except Exception:
         sweets = []
     try:
-        sours = df_1['sourness'].drop_duplicates().tolist()
+        sourness = df_1['sourness'].drop_duplicates().tolist()
+        sours = sorted(sourness, key=lambda x: priority_map.get(x, 0))
     except Exception:
         sours = []
     try:
         alcohols = df_1['alcohol_feeling'].drop_duplicates().tolist()
+        alcohols = sorted(alcohols, key=lambda x: priority_map.get(x, 0))
     except Exception:
         alcohols = []
     try:
@@ -239,7 +232,6 @@ def build_filter_ui():
         rb = tk.Radiobutton(al_frame, text=option, variable=alcohol_var, value=option)
         rb.pack(side=LEFT, padx=4)
 
-    # Type combobox
     type_frame = ttk.LabelFrame(leftFrame, text='Type')
     type_frame.pack(fill='x', expand=False, padx=4, pady=(0,8))
     type_var = tk.StringVar()
@@ -265,8 +257,8 @@ def back_to_home_from_admin():
     frame_admin.pack_forget()
     frame_filter.pack(fill='both', expand=True)
 
-manage_btn = tk.Button(topFrame, text='管理酒譜', command=show_admin_panel)
-manage_btn.pack(side=RIGHT, padx=6)
+manage_btn = tk.Button(topFrame, text='管理酒的選項', command=show_admin_panel)
+manage_btn.pack(side=RIGHT, padx=30)
 
 # Utility helpers
 def normalize_text(s):
@@ -399,7 +391,8 @@ def show_results_list(matches):
         tk.Button(
             row,
             text="選擇",
-            command=lambda d=drink: open_secondary_window(d)
+            command=lambda d=drink: open_secondary_window(d),
+            activebackground="#558fa7",
         ).pack(side=LEFT)
             # --- 在清單頁底部加入返回上一頁 ---
     tk.Button(
@@ -479,7 +472,7 @@ def build_admin_ui():
         # open a small form to add new drink
         add_win = tk.Toplevel()
         add_win.title('新增飲料')
-        fields = ['drink_name','Type','glassware','time','abv','ingredients','steps (加:\n)','mouthfeel','flavor_tags','alcohol_feeling','sourness','sweetness']
+        fields = ['drink_name','Type','glassware','time','abv','ingredients','steps (加:\\n)','mouthfeel','flavor_tags','alcohol_feeling','sourness','sweetness']
         entries = {}
         for i, f in enumerate(fields):
             lbl = tk.Label(add_win, text=f)
@@ -492,11 +485,9 @@ def build_admin_ui():
             new = {f: entries[f].get() for f in fields}
             try:
                 global df_1
-                # ensure all columns exist
                 for col in new.keys():
                     if col not in df_1.columns:
                         df_1[col] = ''
-                # build row matching df_1 columns order
                 row_for_df = {col: new.get(col, '') for col in df_1.columns}
                 df_1 = pd.concat([df_1, pd.DataFrame([row_for_df])], ignore_index=True)
                 df_1.to_csv(file_path, index=False, encoding='utf-8-sig')
