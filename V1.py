@@ -23,7 +23,6 @@ bg_image = ctk.CTkImage(
     size=(800, 600)
 )
 
-
 # 增加字體大小以提升可讀性
 base_font_size = 12
 try:
@@ -86,7 +85,6 @@ favorites_frame.pack(anchor='w', pady=6, padx=6, fill="x")
 fav_title = ctk.CTkLabel(favorites_frame, text="我的最愛 (前5)", text_color="#2d2d2d")
 fav_title.pack(anchor='w', padx=8, pady=(8, 6))
 
-# Listbox with scrollbar
 fav_list_frame = ctk.CTkFrame(favorites_frame, fg_color="white", corner_radius=4)
 fav_list_frame.pack(side="left", fill="both", expand=True, padx=8, pady=(0,8))
 fav_listbox = tk.Listbox(fav_list_frame, width=38, height=5, bg="white", fg="#2d2d2d", font=("Arial", 10), relief="flat", highlightthickness=0)
@@ -560,10 +558,9 @@ def accumulate_choices():
         'alcohol_feeling': alcohol_var.get(),
         'mouthfeel': [k for k, v in mouthfeel_vars.items() if v.get() == 1],
     }
-    # call find best matches function
+
     matches = find_best_matches(df_1, selections, top_n=5)
     if matches:
-        # show list so user can pick one
         show_results_list(matches)
     else:
         messagebox.showinfo("推薦結果", "找不到符合條件的調酒，請重新選擇條件。")
@@ -642,7 +639,6 @@ def open_secondary_window(result_text):
     ttk.Label(right_col, text='Steps', font=(None, 12, 'bold')).pack(anchor='nw')
     steps_frame = ctk.CTkFrame(right_col)
     steps_frame.pack(fill="both", expand=True, pady=6)
-
 
     steps_text = ctk.CTkTextbox(steps_frame, wrap='word')
     steps_vsb = ttk.Scrollbar(steps_frame, orient='vertical', command=steps_text.yview)
