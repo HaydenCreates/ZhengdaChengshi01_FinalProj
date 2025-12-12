@@ -2,7 +2,6 @@
 import tkinter as tk
 from PIL import Image
 from tkinter import messagebox
-from tkinter import BOTTOM, TOP, LEFT, RIGHT
 import pandas as pd
 from tkinter import ttk
 import tkinter.font as tkfont
@@ -10,10 +9,9 @@ import os
 import customtkinter as ctk
 
 ctk.set_appearance_mode("dark") 
-ctk.set_default_color_theme("dark-blue") 
 
 #主要的視窗
-window = ctk.CTk()
+window = ctk.CTk(fg_color="#1a1410")
 window.title("酒吧管理系统")
 
 try:
@@ -58,40 +56,40 @@ def exit_app():
 bg_label = ctk.CTkLabel(window, image=bg_image, text="")
 bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-frame_filter = ctk.CTkFrame(window, corner_radius=15)
-frame_list   = ctk.CTkFrame(window, corner_radius=15)
-frame_detail = ctk.CTkFrame(window,corner_radius=15)
-frame_admin  = ctk.CTkFrame(window, corner_radius=15)
+frame_filter = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
+frame_list   = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
+frame_detail = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
+frame_admin  = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
 
 frame_filter.pack(fill="both", expand=True,padx=10, pady=10)
 
-topFrame = ctk.CTkFrame(frame_filter)
+topFrame = ctk.CTkFrame(frame_filter, fg_color="#3d2f26", corner_radius=10)
 topFrame.pack(side="top", fill='x', pady=(0, 5))
 
-contentFrame = ctk.CTkFrame(frame_filter)
+contentFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
 contentFrame.pack(fill='both', expand=True, padx=5, pady=5)
 
-leftFrame = ctk.CTkFrame(contentFrame)
+leftFrame = ctk.CTkFrame(contentFrame, fg_color="transparent")
 leftFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 
-rightFrame = ctk.CTkFrame(contentFrame)
+rightFrame = ctk.CTkFrame(contentFrame, fg_color="transparent")
 rightFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 
-bottomFrame = ctk.CTkFrame(frame_filter)
+bottomFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
 bottomFrame.pack(side="bottom", fill='x', pady=(5, 0))
 
 # 顯示最喜歡的（前5個）
 fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')  
 
-favorites_frame = ctk.CTkFrame(rightFrame, corner_radius=8)
+favorites_frame = ctk.CTkFrame(rightFrame, corner_radius=8, fg_color="#3d2f26")
 favorites_frame.pack(anchor='w', pady=6, padx=6, fill="x")
 
-fav_title = ctk.CTkLabel(favorites_frame, text="我的最愛 (前5)", text_color="white",  font=(None, 14, 'bold'))
+fav_title = ctk.CTkLabel(favorites_frame, text="🥃 我的最愛 (前5)", text_color="#f2e48a", font=("FangSong", 14, 'bold'))
 fav_title.pack(anchor='w', padx=8, pady=(8, 6))
 
-fav_list_frame = ctk.CTkFrame(favorites_frame, corner_radius=4)
+fav_list_frame = ctk.CTkFrame(favorites_frame, corner_radius=4, fg_color="#1a1410")
 fav_list_frame.pack(side="left", fill="both", expand=True, padx=8, pady=(0,8))
-fav_listbox = tk.Listbox(fav_list_frame, width=38, height=5, font=("Arial", 10), relief="flat", highlightthickness=0)
+fav_listbox = tk.Listbox(fav_list_frame, width=38, height=5, font=("Slab Serif", 10), relief="flat", highlightthickness=0, bg="#1a1410", fg="#f2e48a", selectbackground="#8B6F47")
 fav_listbox.pack(side="left", fill="both", expand=True)
 fav_scrollbar = ttk.Scrollbar(fav_list_frame, command=fav_listbox.yview)
 fav_scrollbar.pack(side="right", fill="y")
@@ -173,8 +171,8 @@ def remove_selected_favorite(path=fav_path):
     load_favorites()
     messagebox.showinfo("已移除", f"已將「{display_name}」從最愛移除。")
 
-remove_btn = ctk.CTkButton(favorites_frame, text="刪除凸顯的", command=remove_selected_favorite, width=120)
-remove_btn.pack(anchor='w', padx=6, pady=(6,6))
+remove_btn = ctk.CTkButton(favorites_frame, text="刪除凸顯的", command=remove_selected_favorite, width=120, fg_color="#704020", hover_color="#8B6F47", text_color="#f2e48a", font=("FangSong", 14, 'bold'))
+remove_btn.pack(anchor='w', padx=8, pady=(0,8))
 
 # 自動讓視窗最大化
 window.geometry("{0}x{1}+0+0".format(window.winfo_screenwidth() -100, window.winfo_screenheight() -100))
@@ -211,65 +209,65 @@ def build_filter_ui():
 
     # mouthfeel
     mouthfeel_vars = {}
-    mouthfeel_frame = ctk.CTkFrame(leftFrame)
-    mouthfeel_frame.pack(fill='x', expand=False, padx=4, pady=(0,8))
+    mouthfeel_frame = ctk.CTkFrame(leftFrame, fg_color="#3d2f26", corner_radius=6)
+    mouthfeel_frame.pack(fill='x', expand=False, padx=0, pady=(0,8))
 
-    ctk.CTkLabel(mouthfeel_frame, text='Mouthfeel', font=(None, 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
+    ctk.CTkLabel(mouthfeel_frame, text='🍷 Mouthfeel', text_color="#f2e48a", font=("Slab Serif", 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
 
-    mf_inner = ctk.CTkFrame(mouthfeel_frame)
-    mf_inner.pack(fill='both', expand=True, padx=4, pady=(0,6))
+    mf_inner = ctk.CTkFrame(mouthfeel_frame, fg_color="transparent")
+    mf_inner.pack(fill='both', expand=True, padx=8, pady=(0,6))
 
     for option in mouthfeels:
         var = tk.IntVar()
         mouthfeel_vars[option] = var
-        cb = ctk.CTkCheckBox(mf_inner, text=option, variable=var)
+        cb = ctk.CTkCheckBox(mf_inner, text=option, variable=var, text_color="#e8d4b8", fg_color="#f55d42", hover_color="#ff7f66")
         cb.pack(anchor='w', padx=8, pady=2)
 
     # Taste group
-    taste_frame = ctk.CTkFrame(leftFrame, fg_color="transparent", corner_radius=6)
+    taste_frame = ctk.CTkFrame(leftFrame, fg_color="#3d2f26", corner_radius=6)
     taste_frame.pack(fill='both', expand=False, padx=0, pady=(0,8))
-    ctk.CTkLabel(taste_frame, text='Taste / Feeling', font=(None, 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
+    ctk.CTkLabel(taste_frame, text='🥃 Taste / Feeling', text_color="#f2e48a", font=("Slab Serif", 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
 
     #Sweetness
     sweetness_var = tk.StringVar()
     sw_frame = ctk.CTkFrame(taste_frame, fg_color="transparent")
-    sw_frame.pack(fill='x', padx=6, pady=(4, 0))
-    ctk.CTkLabel(sw_frame, text='Sweetness:', width=80, anchor='w').pack(side="left")
+    sw_frame.pack(fill='x', padx=8, pady=(4, 0))
+    ctk.CTkLabel(sw_frame, text='Sweetness:', text_color="#f2e48a", width=80, anchor='w', font=("Slab Serif", 11)).pack(side="left")
     for option in sweets:
-        rb = ctk.CTkRadioButton(sw_frame, text=option, variable=sweetness_var, value=option)
+        rb = ctk.CTkRadioButton(sw_frame, text=option, variable=sweetness_var, value=option, text_color="#e8d4b8", fg_color="#f55d42", hover_color="#ff7f66")
         rb.pack(side="left", padx=4)
 
     #Sourness
     sourness_var = tk.StringVar()
     so_frame = ctk.CTkFrame(taste_frame, fg_color="transparent")
-    so_frame.pack(fill='x', padx=6, pady=(6, 0))
-    ctk.CTkLabel(so_frame, text='Sourness:', width=80, anchor='w').pack(side="left")
+    so_frame.pack(fill='x', padx=8, pady=(6, 0))
+    ctk.CTkLabel(so_frame, text='Sourness:', text_color="#f2e48a", width=80, anchor='w', font=("Slab Serif", 11)).pack(side="left")
     for option in sours:
-        rb = ctk.CTkRadioButton(so_frame, text=option, variable=sourness_var, value=option)
+        rb = ctk.CTkRadioButton(so_frame, text=option, variable=sourness_var, value=option, text_color="#e8d4b8", fg_color="#f55d42", hover_color="#ff7f66")
         rb.pack(side="left", padx=4)
 
     #Alcohol Feeling
     alcohol_var = tk.StringVar()
     al_frame = ctk.CTkFrame(taste_frame, fg_color="transparent")
-    al_frame.pack(fill='x', padx=6, pady=(6, 8))
-    ctk.CTkLabel(al_frame, text='Alcohol:', width=80, anchor='w').pack(side="left")
+    al_frame.pack(fill='x', padx=8, pady=(6, 8))
+    ctk.CTkLabel(al_frame, text='Alcohol:', text_color="#f2e48a", width=80, anchor='w', font=("Slab Serif", 11)).pack(side="left")
     for option in alcohols:
-        rb = ctk.CTkRadioButton(al_frame, text=option, variable=alcohol_var, value=option)
+        rb = ctk.CTkRadioButton(al_frame, text=option, variable=alcohol_var, value=option, text_color="#e8d4b8", fg_color="#f55d42", hover_color="#ff7f66")
         rb.pack(side="left", padx=4)
 
     # Type
-    type_frame = ctk.CTkFrame(leftFrame)
-    type_frame.pack(fill='x', expand=False, padx=4, pady=(0, 8))
-    ctk.CTkLabel(type_frame, text='Type', font=(None, 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
+    type_frame = ctk.CTkFrame(leftFrame, fg_color="#3d2f26", corner_radius=6)
+    type_frame.pack(fill='x', expand=False, padx=0, pady=(0, 8))
+    ctk.CTkLabel(type_frame, text='🍸 Type', text_color="#f2e48a", font=("Slab Serif", 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
     type_var = tk.StringVar()
-    type_combobox = ctk.CTkComboBox(type_frame, variable=type_var, values=types, width=220)
+    type_combobox = ctk.CTkComboBox(type_frame, variable=type_var, values=types, width=220, text_color="#e8d4b8", button_color="#704020")
     type_combobox.pack(anchor='w', padx=10, pady=6)
 
 # initial build
 build_filter_ui()
 
 # 標題放在頂部
-title_label = ctk.CTkLabel(topFrame, text="酒吧管理系统", font=(None, 24, 'bold'))
+title_label = ctk.CTkLabel(topFrame, text="🍹 酒吧管理系統", text_color="#f2e48a", font=("FangSong", 24, 'bold'))
 title_label.pack(pady=12, side="left", padx=10)
 
 # 管理酒譜按鈕（切換到 admin 面板）
@@ -284,7 +282,7 @@ def back_to_home_from_admin():
     frame_admin.pack_forget()
     frame_filter.pack(fill='both', expand=True, padx=10, pady=10)
 
-manage_btn = ctk.CTkButton(topFrame, text='管理酒譜', command=show_admin_panel, width=120)
+manage_btn = ctk.CTkButton(topFrame, text='🔧 管理酒的選項', command=show_admin_panel, width=140, fg_color="#704020", hover_color="#8B6F47", text_color="#d4af37", font=("FangSong", 14, 'bold'))
 manage_btn.pack(side="right", padx=10, pady=8)
 
 # Utility helpers
@@ -441,7 +439,7 @@ def build_admin_ui():
     for w in frame_admin.winfo_children():
         w.destroy()
 
-    header = ctk.CTkLabel(frame_admin, text='酒譜管理', font=(None, 18, 'bold'))
+    header = ctk.CTkLabel(frame_admin, text='酒譜管理', font=("FangSong", 18, 'bold'))
     header.pack(pady=8)
 
     # 列出酒譜的表格
@@ -599,13 +597,13 @@ def open_secondary_window(result_text):
     secondary_window.title(result_text['row'].get('drink_name', 'Details'))
     secondary_window.minsize(640, 420)
 
-    main_frame = ctk.CTkFrame(secondary_window, corner_radius=0)
+    main_frame = ctk.CTkFrame(secondary_window, corner_radius=0, fg_color="#3d2f26")
     main_frame.pack(fill='both', expand=True, padx=12, pady=12)
 
-    left_col = ctk.CTkFrame(main_frame, width=260)
+    left_col = ctk.CTkFrame(main_frame,fg_color="#3d2f26", width=260)
     left_col.pack(side="left", fill="y", padx=(0,12))
 
-    right_col = ctk.CTkFrame(main_frame)
+    right_col = ctk.CTkFrame(main_frame,fg_color="#3d2f26")
     right_col.pack(side="left", fill="both", expand=True)
 
 
@@ -633,13 +631,13 @@ def open_secondary_window(result_text):
         ctk.CTkLabel(row, text=str(val), anchor='w').pack(side="left")
 
     # 右邊: 成分和步驟
-    ctk.CTkLabel(right_col, text='Ingredients', font=(None, 12, 'bold')).pack(anchor='nw')
+    ctk.CTkLabel(right_col, text='Ingredients', font=("Slab Serif", 12, 'bold')).pack(anchor='nw')
     ingredients_text = ctk.CTkTextbox(right_col, height=6, wrap='word')
     ingredients_text.pack(fill='x', pady=(4,8))
     ingredients_text.insert('1.0', str(result_text['row'].get('ingredients', '')))
     ingredients_text.configure(state='disabled')
 
-    ctk.CTkLabel(right_col, text='Steps', font=(None, 12, 'bold')).pack(anchor='nw')
+    ctk.CTkLabel(right_col, text='Steps', font=("Slab Serif", 12, 'bold')).pack(anchor='nw')
     steps_frame = ctk.CTkFrame(right_col)
     steps_frame.pack(fill='both', expand=True)
 
@@ -675,10 +673,10 @@ def open_secondary_window(result_text):
 btn_right = ctk.CTkFrame(bottomFrame, fg_color="transparent")
 btn_right.pack(side="right", padx=12, pady=10)
 
-button = ctk.CTkButton(btn_right, text="確認", command=accumulate_choices, width=130, height=48)
+button = ctk.CTkButton(btn_right, text="✓ 確認", command=accumulate_choices, width=130, height=48, fg_color="#704020", hover_color="#8B6F47", text_color="#f2e48a", font=("FangSong", 16, 'bold'))
 button.pack(side="left", padx=(0, 8))
 
-exit_button = ctk.CTkButton(btn_right, text="離開", command=exit_app, width=130, height=48)
+exit_button = ctk.CTkButton(btn_right, text="✕ 離開", command=exit_app, width=130, height=48, fg_color="#5c3d2e", hover_color="#704020", text_color="#f2e48a", font=("FangSong", 16, 'bold'))
 exit_button.pack(side="left")
 
 window.mainloop()
