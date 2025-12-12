@@ -58,10 +58,10 @@ def exit_app():
 bg_label = ctk.CTkLabel(window, image=bg_image, text="")
 bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-frame_filter = ctk.CTkFrame(window, fg_color="transparent", corner_radius=15)
-frame_list   = ctk.CTkFrame(window, fg_color="transparent", corner_radius=15)
-frame_detail = ctk.CTkFrame(window, fg_color="transparent",corner_radius=15)
-frame_admin  = ctk.CTkFrame(window, fg_color="transparent", corner_radius=15)
+frame_filter = ctk.CTkFrame(window, corner_radius=15)
+frame_list   = ctk.CTkFrame(window, corner_radius=15)
+frame_detail = ctk.CTkFrame(window,corner_radius=15)
+frame_admin  = ctk.CTkFrame(window, corner_radius=15)
 
 frame_filter.pack(fill="both", expand=True,padx=10, pady=10)
 
@@ -83,15 +83,15 @@ bottomFrame.pack(side="bottom", fill='x', pady=(5, 0))
 # 顯示最喜歡的（前5個）
 fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')  
 
-favorites_frame = ctk.CTkFrame(rightFrame, fg_color="#ede8df", corner_radius=8)
+favorites_frame = ctk.CTkFrame(rightFrame, corner_radius=8)
 favorites_frame.pack(anchor='w', pady=6, padx=6, fill="x")
 
-fav_title = ctk.CTkLabel(favorites_frame, text="我的最愛 (前5)", text_color="#2d2d2d",  font=(None, 14, 'bold'))
+fav_title = ctk.CTkLabel(favorites_frame, text="我的最愛 (前5)", text_color="white",  font=(None, 14, 'bold'))
 fav_title.pack(anchor='w', padx=8, pady=(8, 6))
 
-fav_list_frame = ctk.CTkFrame(favorites_frame, fg_color="white", corner_radius=4)
+fav_list_frame = ctk.CTkFrame(favorites_frame, corner_radius=4)
 fav_list_frame.pack(side="left", fill="both", expand=True, padx=8, pady=(0,8))
-fav_listbox = tk.Listbox(fav_list_frame, width=38, height=5, bg="white", fg="#2d2d2d", font=("Arial", 10), relief="flat", highlightthickness=0)
+fav_listbox = tk.Listbox(fav_list_frame, width=38, height=5, font=("Arial", 10), relief="flat", highlightthickness=0)
 fav_listbox.pack(side="left", fill="both", expand=True)
 fav_scrollbar = ttk.Scrollbar(fav_list_frame, command=fav_listbox.yview)
 fav_scrollbar.pack(side="right", fill="y")
@@ -216,7 +216,7 @@ def build_filter_ui():
 
     ctk.CTkLabel(mouthfeel_frame, text='Mouthfeel', font=(None, 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
 
-    mf_inner = ctk.CTkFrame(mouthfeel_frame, fg_color="transparent")
+    mf_inner = ctk.CTkFrame(mouthfeel_frame)
     mf_inner.pack(fill='both', expand=True, padx=4, pady=(0,6))
 
     for option in mouthfeels:
@@ -226,7 +226,7 @@ def build_filter_ui():
         cb.pack(anchor='w', padx=8, pady=2)
 
     # Taste group
-    taste_frame = ctk.CTkFrame(leftFrame, fg_color="#ede8df", corner_radius=6)
+    taste_frame = ctk.CTkFrame(leftFrame, fg_color="transparent", corner_radius=6)
     taste_frame.pack(fill='both', expand=False, padx=0, pady=(0,8))
     ctk.CTkLabel(taste_frame, text='Taste / Feeling', font=(None, 13, 'bold')).pack(anchor='w', padx=8, pady=(6, 2))
 
