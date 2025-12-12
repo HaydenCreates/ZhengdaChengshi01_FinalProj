@@ -407,25 +407,32 @@ def show_results_list(matches):
     for w in frame_list.winfo_children():
         w.destroy()
 
-    ctk.CTkLabel(frame_list, text="符合條件的調酒", font=ctk.CTkFont(size=22, weight="bold")).pack(pady=15)
+    ctk.CTkLabel(frame_list, text="符合條件的調酒", font=ctk.CTkFont("FangSong",size=22, weight="bold")).pack(pady=15)
 
     for drink in matches:
         row = ctk.CTkFrame(frame_list, fg_color="transparent")
         row.pack(pady=5,padx=10, fill="x")
 
-        ctk.CTkLabel(row, text=drink["row"]["drink_name"], width=200, anchor="w").pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(row, text=drink["row"]["drink_name"], width=200, anchor="w").pack(side="left", padx=(0, 10), pady=6)
         ctk.CTkButton(
             row,
             text="選擇",
             command=lambda d=drink: open_secondary_window(d),
-            width=90
-        ).pack(side="left")
+            width=90,
+            fg_color="#704020",
+            hover_color="#8B6F47",
+            text_color="#d4af37"
+        ).pack(side="left", padx=10, pady=6)
 
     ctk.CTkButton(
         frame_list,
         text="返回清單",
         command=back_to_filter,
-        width=140
+        width=140, 
+        fg_color="#5c3d2e", 
+        hover_color="#704020", 
+        text_color="#f2e48a", 
+        font=("FangSong", 16, 'bold')
     ).pack(pady=20)
 
 
@@ -439,13 +446,21 @@ def build_admin_ui():
     for w in frame_admin.winfo_children():
         w.destroy()
 
-    header = ctk.CTkLabel(frame_admin, text='酒譜管理', font=("FangSong", 18, 'bold'))
+    header = ctk.CTkLabel(frame_admin, text='酒譜管理', text_color="#d4af37", font=("FangSong", 18, 'bold'))
     header.pack(pady=8)
 
     # 列出酒譜的表格
     cols = ('drink_name', 'Type', 'glassware', 'time', 'abv')
-    table_frame = ctk.CTkFrame(frame_admin)
+    table_frame = ctk.CTkFrame(frame_admin, fg_color="#3d2f26", corner_radius=6)
     table_frame.pack(fill="both", expand=True, padx=8, pady=8)
+
+    # style the ttk Treeview to blend with CTk colors
+    style = ttk.Style()
+    try:
+        style.configure('Treeview', background='#1a1410', fieldbackground='#1a1410', foreground='#f2e48a')
+        style.configure('Treeview.Heading', background='#2a201a', foreground='#d4af37')
+    except Exception:
+        pass
 
     tree = ttk.Treeview(table_frame, columns=cols, show='headings', selectmode='browse')
     for c in cols:
@@ -463,7 +478,7 @@ def build_admin_ui():
         tree.insert('', 'end', iid=str(idx), values=vals)
 
     # 按鈕區域
-    btn_frame = ctk.CTkFrame(frame_admin)
+    btn_frame = ctk.CTkFrame(frame_admin, fg_color="transparent")
     btn_frame.pack(fill='x', pady=(0, 8), padx=8)
 
     def refresh():
@@ -501,14 +516,15 @@ def build_admin_ui():
 
     def add_new():
         # open a small form to add new drink
-        add_win = ctk.CTkToplevel()
+        add_win = ctk.CTkToplevel(master=window)
         add_win.title('新增飲料')
+        add_win.configure(fg_color="#2a201a")
         fields = ['drink_name','Type','glassware','time','abv','ingredients','steps (加:\\n)','mouthfeel','flavor_tags','alcohol_feeling','sourness','sweetness']
         entries = {}
         for i, f in enumerate(fields):
-            lbl = ctk.CTkLabel(add_win, text=f)
+            lbl = ctk.CTkLabel(add_win, text=f, text_color="#d4af37")
             lbl.grid(row=i, column=0, sticky='e', padx=6, pady=4)
-            ent = ctk.CTkEntry(add_win, width=50)
+            ent = ctk.CTkEntry(add_win, width=50, fg_color="#1a1410", text_color="#f2e48a")
             ent.grid(row=i, column=1, padx=6, pady=4)
             entries[f] = ent
 
@@ -528,21 +544,20 @@ def build_admin_ui():
             except Exception as e:
                 messagebox.showerror('錯誤', f'新增失敗：{e}')
 
-        save_btn = ctk.CTkButton(add_win, text='儲存', command=save_new, width=120)
-        save_btn.grid(row=len(fields), column=0, pady=10)
-        cancel_btn = ctk.CTkButton(add_win, text='取消', command=add_win.destroy, width=120)
-        cancel_btn.grid(row=len(fields), column=1, pady=10)
+        save_btn = ctk.CTkButton(add_win, text='儲存', command=save_new, width=120, fg_color="#704020", hover_color="#8B6F47", text_color="#d4af37", font=("FangSong", 16, 'bold'))
+        save_btn.grid(row=len(fields), column=0, pady=10, padx=6)
+        cancel_btn = ctk.CTkButton(add_win, text='取消', command=add_win.destroy, width=120, fg_color="#5c3d2e", hover_color="#704020", text_color="#d4af37", font=("FangSong", 16, 'bold'))
+        cancel_btn.grid(row=len(fields), column=1, pady=10, padx=6)
 
-    add_btn = ctk.CTkButton(btn_frame, text='新增飲料', command=add_new, width=120)
+    add_btn = ctk.CTkButton(btn_frame, text='新增飲料', command=add_new, width=120, fg_color="#704020", hover_color="#8B6F47", text_color="#d4af37")
     add_btn.pack(side="left", padx=6)
-
-    remove_btn = ctk.CTkButton(btn_frame, text='移除選定', command=remove_selected, width=120)
+    remove_btn = ctk.CTkButton(btn_frame, text='移除選定', command=remove_selected, width=120, fg_color="#5c3d2e", hover_color="#704020", text_color="#d4af37",font=("FangSong", 16, 'bold'))
     remove_btn.pack(side="left", padx=6)
 
-    refresh_btn = ctk.CTkButton(btn_frame, text='重新整理', command=refresh, width=120)
+    refresh_btn = ctk.CTkButton(btn_frame, text='重新整理', command=refresh, width=120, fg_color="#704020", hover_color="#8B6F47", text_color="#d4af37",font=("FangSong", 16, 'bold'))
     refresh_btn.pack(side="left", padx=6)
 
-    back_btn = ctk.CTkButton(btn_frame, text='返回', command=back_to_home_from_admin, width=120)
+    back_btn = ctk.CTkButton(btn_frame, text='返回', command=back_to_home_from_admin, width=120, fg_color="#5c3d2e", hover_color="#704020", text_color="#d4af37",font=("FangSong", 16, 'bold'))
     back_btn.pack(side="right", padx=6)
 
 #積累用戶選擇的選項
@@ -597,20 +612,20 @@ def open_secondary_window(result_text):
     secondary_window.title(result_text['row'].get('drink_name', 'Details'))
     secondary_window.minsize(640, 420)
 
-    main_frame = ctk.CTkFrame(secondary_window, corner_radius=0, fg_color="#3d2f26")
+    main_frame = ctk.CTkFrame(secondary_window, corner_radius=8, fg_color="#2a201a")
     main_frame.pack(fill='both', expand=True, padx=12, pady=12)
 
-    left_col = ctk.CTkFrame(main_frame,fg_color="#3d2f26", width=260)
-    left_col.pack(side="left", fill="y", padx=(0,12))
+    left_col = ctk.CTkFrame(main_frame, fg_color="#2a201a", width=300, corner_radius=6)
+    left_col.pack(side="left", fill="y", padx=(0,12), pady=6)
 
-    right_col = ctk.CTkFrame(main_frame,fg_color="#3d2f26")
-    right_col.pack(side="left", fill="both", expand=True)
+    right_col = ctk.CTkFrame(main_frame, fg_color="#2a201a", corner_radius=6)
+    right_col.pack(side="left", fill="both", expand=True, pady=6)
 
 
     # =左邊: 基本資訊
     name_text = result_text['row'].get('drink_name') or result_text['row'].get('Type') or 'Unnamed'
-    name_lbl = ctk.CTkLabel(left_col, text=name_text, font=(None, 16, 'bold'))
-    name_lbl.pack(anchor='nw', pady=(0, 8))
+    name_lbl = ctk.CTkLabel(left_col, text=name_text, text_color="#d4af37", font=(None, 16, 'bold'))
+    name_lbl.pack(anchor='nw', pady=(0, 8), padx=8)
 
     info_items = [
         ('Type', result_text['row'].get('Type', '')),
@@ -626,24 +641,23 @@ def open_secondary_window(result_text):
 
     for label, val in info_items:
         row = ctk.CTkFrame(left_col, fg_color="transparent")
-        row.pack(anchor='w', pady=2, fill='x')
-        ctk.CTkLabel(row, text=f"{label}:", width=110, anchor='w').pack(side="left")
-        ctk.CTkLabel(row, text=str(val), anchor='w').pack(side="left")
+        row.pack(anchor='w', pady=4, fill='x', padx=8)
+        ctk.CTkLabel(row, text=f"{label}:", width=110, anchor='w', text_color="#d4af37", font=(None,11,'bold')).pack(side="left")
+        ctk.CTkLabel(row, text=str(val), anchor='w', text_color="#f2e48a").pack(side="left")
 
     # 右邊: 成分和步驟
-    ctk.CTkLabel(right_col, text='Ingredients', font=("Slab Serif", 12, 'bold')).pack(anchor='nw')
-    ingredients_text = ctk.CTkTextbox(right_col, height=6, wrap='word')
-    ingredients_text.pack(fill='x', pady=(4,8))
+    ctk.CTkLabel(right_col, text='Ingredients', text_color="#d4af37", font=("Slab Serif", 12, 'bold')).pack(anchor='nw', pady=(6,0), padx=8)
+    ingredients_text = ctk.CTkTextbox(right_col, height=6, wrap='word', fg_color="#1a1410", text_color="#f2e48a")
+    ingredients_text.pack(fill='x', pady=(4,8), padx=8)
     ingredients_text.insert('1.0', str(result_text['row'].get('ingredients', '')))
     ingredients_text.configure(state='disabled')
 
-    ctk.CTkLabel(right_col, text='Steps', font=("Slab Serif", 12, 'bold')).pack(anchor='nw')
-    steps_frame = ctk.CTkFrame(right_col)
-    steps_frame.pack(fill='both', expand=True)
+    ctk.CTkLabel(right_col, text='Steps', text_color="#d4af37", font=("Slab Serif", 12, 'bold')).pack(anchor='nw', pady=(6,0), padx=8)
+    steps_frame = ctk.CTkFrame(right_col, fg_color="#1a1410", corner_radius=6)
+    steps_frame.pack(fill='both', expand=True, padx=8, pady=(6,8))
 
-    steps_text = ctk.CTkTextbox(steps_frame, wrap='word')
+    steps_text = ctk.CTkTextbox(steps_frame, wrap='word', fg_color="#1a1410", text_color="#f2e48a")
     steps_vsb = ttk.Scrollbar(steps_frame, orient='vertical', command=steps_text.yview)
-    
     steps_text.configure(yscrollcommand=steps_vsb.set)
     steps_vsb.pack(side='right', fill='y')
     steps_text.pack(side="left", fill='both', expand=True, pady=(4, 4), padx=(0, 4))
@@ -654,19 +668,19 @@ def open_secondary_window(result_text):
     steps_text.configure(state='disabled')
 
     # 下面的按鈕區域
-    footer = ctk.CTkFrame(secondary_window, corner_radius=0)
+    footer = ctk.CTkFrame(secondary_window, corner_radius=0, fg_color="#2a201a")
     footer.pack(fill='x', padx=12, pady=(0, 8))
 
-    notice = ctk.CTkLabel(footer, text="通知: 推薦為相似性最高的選項，可能不完全符合所有選擇", text_color='red')
-    notice.pack(side="left")
+    notice = ctk.CTkLabel(footer, text="通知: 推薦為相似性最高的選項，可能不完全符合所有選擇", text_color='#d4af37')
+    notice.pack(side="left", padx=8)
 
     btn_frame = ctk.CTkFrame(footer, fg_color="transparent")
-    btn_frame.pack(side="right")
+    btn_frame.pack(side="right", padx=8)
 
-    save_btn = ctk.CTkButton(btn_frame, text='保存到最愛', command=lambda: save_to_favorites(result_text['row'], fav_path='最喜歡的.csv'), width=130)
+    save_btn = ctk.CTkButton(btn_frame, text='保存到最愛', command=lambda: save_to_favorites(result_text['row'], fav_path='最喜歡的.csv'), width=130, fg_color="#704020", hover_color="#8B6F47", text_color="#d4af37",font=("FangSong", 16, 'bold'))
     save_btn.pack(side="left", padx=(0, 8))
 
-    close_btn = ctk.CTkButton(btn_frame, text='關閉', command=secondary_window.destroy, width=90)
+    close_btn = ctk.CTkButton(btn_frame, text='關閉', command=secondary_window.destroy, width=90, fg_color="#5c3d2e", hover_color="#704020", text_color="#d4af37",font=("FangSong", 16, 'bold'))
     close_btn.pack(side="left")
 
 # 確認和離開按鈕
