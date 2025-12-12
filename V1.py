@@ -11,7 +11,7 @@ import customtkinter as ctk
 ctk.set_appearance_mode("dark") 
 
 #主要的視窗
-window = ctk.CTk(fg_color="#1a1410")
+window = ctk.CTk()
 window.title("酒吧管理系统")
 
 try:
@@ -20,11 +20,10 @@ try:
 except Exception:
     pass
 
-bg_image = ctk.CTkImage(
-    light_image=Image.open("bar_bg.png"),
-    dark_image=Image.open("bar_bg.png"),
-    size=(800, 600)
-)
+bg_image_path = os.path.join(os.path.dirname(__file__), 'bar_bg.png')
+bg_image = ctk.CTkImage(Image.open(bg_image_path), size=(window.winfo_screenwidth(), window.winfo_screenheight()))
+bg_lbl = ctk.CTkLabel(window, text="", image=bg_image)
+bg_lbl.place(x=0, y=0)
 
 # 增加字體大小以提升可讀性
 base_font_size = 12
@@ -56,14 +55,14 @@ def exit_app():
 bg_label = ctk.CTkLabel(window, image=bg_image, text="")
 bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-frame_filter = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
-frame_list   = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
-frame_detail = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
-frame_admin  = ctk.CTkFrame(window, corner_radius=15, fg_color="#2a201a")
+frame_filter = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
+frame_list   = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
+frame_detail = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
+frame_admin  = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
 
 frame_filter.pack(fill="both", expand=True,padx=10, pady=10)
 
-topFrame = ctk.CTkFrame(frame_filter, fg_color="#3d2f26", corner_radius=10)
+topFrame = ctk.CTkFrame(frame_filter, fg_color="transparent", corner_radius=10)
 topFrame.pack(side="top", fill='x', pady=(0, 5))
 
 contentFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
