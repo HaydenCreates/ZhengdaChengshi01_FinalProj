@@ -62,7 +62,7 @@ frame_admin  = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
 
 frame_filter.pack(fill="both", expand=True,padx=10, pady=10)
 
-topFrame = ctk.CTkFrame(frame_filter, fg_color="transparent", corner_radius=10)
+topFrame = ctk.CTkFrame(frame_filter, fg_color="#2a201a", corner_radius=10)
 topFrame.pack(side="top", fill='x', pady=(0, 5))
 
 contentFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
@@ -74,7 +74,7 @@ leftFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 rightFrame = ctk.CTkFrame(contentFrame, fg_color="transparent")
 rightFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 
-bottomFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
+bottomFrame = ctk.CTkFrame(frame_filter, fg_color="#2a201a")
 bottomFrame.pack(side="bottom", fill='x', pady=(5, 0))
 
 # 顯示最喜歡的（前5個）
