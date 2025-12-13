@@ -8,14 +8,12 @@ import tkinter.font as tkfont
 import os
 import customtkinter as ctk
 
-ctk.set_appearance_mode("dark") 
-
 #主要的視窗
 window = ctk.CTk()
 window.title("酒吧管理系统")
 
 try:
-    icon_image = tk.PhotoImage(file="icon.png")
+    icon_image = ctk.CTkImage(file="icon.png")
     window.iconphoto(False, icon_image)
 except Exception:
     pass
@@ -23,7 +21,7 @@ except Exception:
 bg_image_path = os.path.join(os.path.dirname(__file__), 'bar_bg.png')
 bg_image = ctk.CTkImage(Image.open(bg_image_path), size=(window.winfo_screenwidth(), window.winfo_screenheight()))
 bg_lbl = ctk.CTkLabel(window, text="", image=bg_image)
-bg_lbl.place(x=0, y=0)
+bg_lbl.place(x=0, y=0, relwidth=1, relheight=1)
 
 # 增加字體大小以提升可讀性
 base_font_size = 12
@@ -52,21 +50,16 @@ def exit_app():
 
 # 框架設置：頂部標題、內容（左右兩欄）、底部按鈕
 # 三個主畫面
-bg_label = ctk.CTkLabel(window, image=bg_image, text="")
-bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+frame_filter = ctk.CTkFrame(window, fg_color="transparent")
+frame_list   = ctk.CTkFrame(window, fg_color="transparent")
+frame_detail = ctk.CTkFrame(window)
+frame_admin  = ctk.CTkFrame(window)
 
-frame_filter = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
-frame_list   = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
-frame_detail = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
-frame_admin  = ctk.CTkFrame(window, corner_radius=15, fg_color="transparent")
+topFrame = ctk.CTkFrame(window)
+topFrame.pack(side="top", fill='x', pady=(0, 5), padx=10)
 
-frame_filter.pack(fill="both", expand=True,padx=10, pady=10)
-
-topFrame = ctk.CTkFrame(frame_filter, fg_color="transparent", corner_radius=10)
-topFrame.pack(side="top", fill='x', pady=(0, 5))
-
-contentFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
-contentFrame.pack(fill='both', expand=True, padx=5, pady=5)
+contentFrame = ctk.CTkFrame(window, fg_color="transparent")
+contentFrame.pack(fill='x', expand=False, padx=5, pady=5)
 
 leftFrame = ctk.CTkFrame(contentFrame, fg_color="transparent")
 leftFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
@@ -74,8 +67,8 @@ leftFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 rightFrame = ctk.CTkFrame(contentFrame, fg_color="transparent")
 rightFrame.pack(side="left", fill='both', expand=True, padx=10, pady=10)
 
-bottomFrame = ctk.CTkFrame(frame_filter, fg_color="transparent")
-bottomFrame.pack(side="bottom", fill='x', pady=(5, 0))
+bottomFrame = ctk.CTkFrame(window, fg_color="transparent")
+bottomFrame.pack(side="top", fill='x', pady=(5, 0), padx=10)
 
 # 顯示最喜歡的（前5個）
 fav_path = os.path.join(os.path.dirname(__file__), '最喜歡的.csv')  
@@ -514,7 +507,6 @@ def build_admin_ui():
             messagebox.showerror('錯誤', f'刪除失敗：{e}')
 
     def add_new():
-        # open a small form to add new drink
         add_win = ctk.CTkToplevel(master=window)
         add_win.title('新增飲料')
         add_win.configure(fg_color="#2a201a")
@@ -692,4 +684,5 @@ button.pack(side="left", padx=(0, 8))
 exit_button = ctk.CTkButton(btn_right, text="✕ 離開", command=exit_app, width=130, height=48, fg_color="#5c3d2e", hover_color="#704020", text_color="#f2e48a", font=("FangSong", 16, 'bold'))
 exit_button.pack(side="left")
 
+bg_lbl.lower()
 window.mainloop()
